@@ -1,0 +1,29 @@
+{
+  "name": "novella-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Novella dating app with real-time chat, heart sync, and butterfly collection",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seed": "node utils/seedDatabase.js",
+    "lint": "eslint src/ --ext .js",
+    "build": "echo \"No build step required for Node.js\""
+  },
+  "keywords": ["dating", "chat", "heart-sync", "butterflies", "real-time", "socket.io", "express", "mongodb"],
+  "author": "Novella Team",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.1",
+    "multer": "^2.0.2",
+    "nodemon": "^3.1.10",
+    "socket.io": "^4.8.1",
+    "uuid": "^12.0.0"
+  }
+}

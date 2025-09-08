@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Camera, Flower, Star, Eye } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import ButterflyAnimation from "../Components/dating/ButterflyAnimation";
 
 export default function Garden() {
@@ -79,17 +78,29 @@ export default function Garden() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-center mb-8"
             >
-                <Button
+                <button
                     onClick={() => setArMode(!arMode)}
-                    className={`${
-                        arMode 
-                            ? 'bg-gradient-to-r from-cyan-500 to-pink-500 text-white' 
-                            : 'bg-white/10 text-purple-300 border border-purple-500/30'
-                    } px-6 py-3 rounded-full transition-all duration-300`}
+                    style={{
+                        background: arMode 
+                            ? 'linear-gradient(to right, #06b6d4, #ec4899)' 
+                            : 'rgba(255, 255, 255, 0.1)',
+                        border: arMode ? 'none' : '1px solid rgba(147, 51, 234, 0.3)',
+                        color: 'white',
+                        padding: '12px 24px',
+                        borderRadius: '9999px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        fontSize: '14px',
+                        fontWeight: '600',
+                        fontStyle: 'italic',
+                        transition: 'all 0.3s ease'
+                    }}
                 >
                     <Camera className="w-5 h-5 mr-2" />
                     {arMode ? 'Exit AR View' : 'Enter AR Mode'}
-                </Button>
+                </button>
             </motion.div>
 
             {/* AR Simulation */}
@@ -280,12 +291,29 @@ export default function Garden() {
                                 </div>
                             )}
                             
-                            <Button
+                            <button
                                 onClick={() => setSelectedSpecies(null)}
-                                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                                style={{
+                                    width: '100%',
+                                    background: 'linear-gradient(to right, #7c3aed, #ec4899)',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    padding: '12px',
+                                    color: 'white',
+                                    fontSize: '16px',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                    transition: 'all 0.2s ease'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.target.style.background = 'linear-gradient(to right, #6d28d9, #db2777)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.target.style.background = 'linear-gradient(to right, #7c3aed, #ec4899)';
+                                }}
                             >
                                 Close
-                            </Button>
+                            </button>
                         </div>
                     </motion.div>
                 </motion.div>

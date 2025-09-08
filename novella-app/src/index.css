@@ -1,13 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-style: italic;
+  background: linear-gradient(to bottom right, #581c87, #7c3aed, #312e81);
+  min-height: 100vh;
+  color: white;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Custom styles for Novella */
+.satoshi {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-style: italic;
+}
+
+/* Falling petals animation */
+.petal {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: radial-gradient(circle, #F72585, #C77DFF);
+  border-radius: 50% 0 50% 0;
+  animation: fall 8s infinite linear;
+  opacity: 0.7;
+}
+
+@keyframes fall {
+  0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+}
+
+/* Butterfly hover effect */
+.butterfly-float {
+  animation: flutter 3s ease-in-out infinite;
+}
+
+@keyframes flutter {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-10px) rotate(2deg); }
+  75% { transform: translateY(-5px) rotate(-1deg); }
+}
+
+/* Bioluminescent glow */
+.bio-glow {
+  box-shadow: 0 0 20px rgba(76, 201, 240, 0.3), 0 0 40px rgba(76, 201, 240, 0.1);
+}
+
+/* Heartbeat pulse */
+.heartbeat {
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
 }
