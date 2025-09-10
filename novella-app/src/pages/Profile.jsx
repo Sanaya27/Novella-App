@@ -26,15 +26,16 @@ export default function Profile() {
       minHeight: '100vh',
       width: '100%',
       padding: '0',
-      color: 'white'
+      color: 'white',
+      background: 'linear-gradient(135deg, #6B46C1 0%, #9333EA 50%, #EC4899 100%)'
     }}>
       {/* Profile Header */}
       <div style={{
-        background: 'rgba(255, 255, 255, 0.1)',
+        background: 'rgba(0, 0, 0, 0.4)',
         backdropFilter: 'blur(20px)',
         padding: '40px 20px',
         textAlign: 'center',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+        border: '1px solid rgba(255, 255, 255, 0.1)'
       }}>
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
@@ -83,7 +84,7 @@ export default function Profile() {
       {/* Stats Grid */}
       <div style={{
         padding: '30px 20px',
-        background: 'rgba(255, 255, 255, 0.05)'
+        background: 'rgba(0, 0, 0, 0.4)'
       }}>
         <h2 style={{
           fontSize: '20px',
@@ -108,12 +109,12 @@ export default function Profile() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: index * 0.1 }}
               style={{
-                background: 'rgba(255, 255, 255, 0.1)',
+                background: 'rgba(0, 0, 0, 0.4)',
                 backdropFilter: 'blur(20px)',
                 borderRadius: '16px',
                 padding: '20px',
                 textAlign: 'center',
-                border: '1px solid rgba(255, 255, 255, 0.2)'
+                border: '1px solid rgba(255, 255, 255, 0.1)'
               }}
             >
               <div style={{
@@ -157,9 +158,9 @@ export default function Profile() {
               onClick={item.action}
               style={{
                 width: '100%',
-                background: 'rgba(255, 255, 255, 0.1)',
+                background: 'rgba(0, 0, 0, 0.4)',
                 backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: '16px',
                 padding: '16px 20px',
                 margin: '0 0 12px 0',

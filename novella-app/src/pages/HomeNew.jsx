@@ -45,19 +45,19 @@ const sampleProfiles = [
   },
   {
     id: 5,
-    name: 'Priya Sharma',
+    name: 'Emma Rodriguez',
     age: 27,
     bio: 'Coffee lover & late-night coder who dreams in algorithms',
-    photo: 'https://images.unsplash.com/photo-1494790108755-2616b332c813?w=400',
+    photo: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400',
     distance: '2.3 km away',
     syncPercentage: 88
   },
   {
     id: 6,
-    name: 'Kavya Patel',
+    name: 'Madison Cooper',
     age: 25,
     bio: 'Adventure seeker with a wild heart and gentle soul',
-    photo: 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=400',
+    photo: 'https://images.unsplash.com/photo-1488716820095-cbe80883c496?w=400',
     distance: '1.5 km away',
     syncPercentage: 91
   }
@@ -66,26 +66,30 @@ const sampleProfiles = [
 export default function Home() {
   const [profiles] = useState(sampleProfiles);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [passedProfiles, setPassedProfiles] = useState(new Set());
   const [isAnimating, setIsAnimating] = useState(false);
   const [butterflyAnimations, setButterflyAnimations] = useState([]);
   const navigate = useNavigate();
   const { user } = useUser();
 
   const currentProfile = profiles[currentIndex];
+  const allProfilesPassed = passedProfiles.size >= profiles.length;
 
   // Butterfly animation when Flutter is pressed
   const triggerButterflyAnimation = () => {
     console.log('🦋 Triggering butterfly animation!');
-    const newButterflies = Array.from({ length: 8 }, (_, i) => ({ // Increased from 3 to 8 butterflies
+    // Create enhanced butterfly animation with natural movement (same as sync page)
+    const newButterflies = Array.from({ length: 8 }, (_, i) => ({
       id: Date.now() + i,
-      delay: i * 150, // Reduced delay for more frequent spawning
-      startX: Math.random() * 30 + 35, // Wider spawn area
-      startY: Math.random() * 40 + 60, // Lower spawn area for more screen coverage
-      endX: Math.random() * 40 + 30, // Wider end area
-      endY: Math.random() * 30 + 10, // Higher end area
-      rotation: Math.random() * 360, // Random initial rotation
-      color: Math.random() > 0.5 ? '#ff6b9d' : '#4ecdc4', // Random colors
-      size: Math.random() > 0.3 ? 'large' : 'medium' // Mix of sizes, mostly large
+      delay: i * 150, // Reduced delay from 200ms to 150ms for quicker succession
+      startX: Math.random() * 40 + 20, // Start from bottom area
+      startY: 90 + Math.random() * 10, // Start from bottom
+      endX: Math.random() * 60 + 20, // End in wider area
+      endY: Math.random() * 20 + 10, // End near top
+      rotation: Math.random() * 30 - 15, // Gentle rotation (-15 to +15 degrees)
+      color: Math.random() > 0.5 ? '#ff6b9d' : '#4ecdc4',
+      size: Math.random() > 0.3 ? 'large' : 'medium',
+      curveX: Math.random() * 30 - 15 // For curved flight path
     }));
     
     console.log('🦋 Created butterflies:', newButterflies);
@@ -94,11 +98,11 @@ export default function Home() {
     setTimeout(() => {
       console.log('🦋 Clearing butterflies');
       setButterflyAnimations([]);
-    }, 2500); // Increased duration from 1500ms to 2500ms
+    }, 3000); // Increased duration to match sync page
   };
 
   const handleAction = (action) => {
-    if (isAnimating) return;
+    if (isAnimating || allProfilesPassed) return;
     
     setIsAnimating(true);
     
@@ -108,8 +112,22 @@ export default function Home() {
         navigate(`/sync/${currentProfile.id}`);
       }, 600);
     } else {
+      // Mark current profile as passed
+      setPassedProfiles(prev => new Set([...prev, currentProfile.id]));
+      
       setTimeout(() => {
-        setCurrentIndex(prev => (prev + 1) % profiles.length);
+        // Find next unviewed profile
+        let nextIndex = -1;
+        for (let i = 0; i < profiles.length; i++) {
+          if (!passedProfiles.has(profiles[i].id) && profiles[i].id !== currentProfile.id) {
+            nextIndex = i;
+            break;
+          }
+        }
+        
+        if (nextIndex !== -1) {
+          setCurrentIndex(nextIndex);
+        }
         setIsAnimating(false);
       }, 300);
     }
@@ -120,7 +138,8 @@ export default function Home() {
       minHeight: '100vh',
       width: '100%',
       position: 'relative',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      background: 'linear-gradient(135deg, #6B46C1 0%, #9333EA 50%, #EC4899 100%)'
     }}>
       {/* Butterfly animations */}
       <AnimatePresence>
@@ -133,48 +152,48 @@ export default function Home() {
                 x: `${butterfly.startX}vw`,
                 y: `${butterfly.startY}vh`,
                 opacity: 1,
-                scale: 1.5, // Start bigger
-                rotate: butterfly.rotation
+                scale: 1
               }}
               animate={{
                 x: `${butterfly.endX}vw`,
                 y: `${butterfly.endY}vh`,
                 opacity: 0,
-                scale: 2.5, // End even bigger
-                rotate: butterfly.rotation + 720, // More rotation
-                rotateY: [0, 180, 360] // Add Y-axis rotation for 3D effect
+                scale: 1.2
               }}
               transition={{
-                duration: 2.0, // Increased from 1.2s to 2.0s
+                duration: 2.0, // Reduced from 3.0 to 2.0 seconds for faster movement
                 delay: butterfly.delay / 1000,
                 ease: 'easeOut'
               }}
               style={{
                 position: 'fixed',
-                zIndex: 1000,
+                zIndex: 9999, // Higher z-index to be on top
                 pointerEvents: 'none'
               }}
             >
+              {/* Large visible emoji butterfly */}
               <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '60px',
-                height: '60px'
+                fontSize: '48px',
+                textAlign: 'center',
+                lineHeight: '1',
+                textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+              }}>
+                🦋
+              </div>
+              
+              {/* Original butterfly animation (backup) */}
+              <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                opacity: 0.8
               }}>
                 <ButterflyAnimation
                   bpm={120}
                   color={butterfly.color}
                   size={butterfly.size}
                 />
-                {/* Fallback emoji if component fails */}
-                <span style={{
-                  position: 'absolute',
-                  fontSize: '32px',
-                  animation: 'flutter 0.5s ease-in-out infinite'
-                }}>
-                  🦋
-                </span>
               </div>
             </motion.div>
           );
@@ -185,23 +204,35 @@ export default function Home() {
       <div style={{
         padding: '20px',
         textAlign: 'center',
-        background: 'rgba(255, 255, 255, 0.1)',
+        background: 'rgba(0, 0, 0, 0.3)',
         backdropFilter: 'blur(20px)'
       }}>
         <h1 style={{
-          fontSize: '24px',
-          fontWeight: '700',
-          color: 'white',
-          margin: '0 0 8px 0'
+          fontSize: '36px',
+          fontWeight: 'bold',
+          background: 'linear-gradient(to right, #22d3ee, #ec4899)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          margin: '0 0 8px 0',
+          fontStyle: 'italic'
         }}>
-          Novella, where hearts sync and stories begin
+          Novella
         </h1>
+        <p style={{
+          fontSize: '16px',
+          color: '#22d3ee',
+          fontStyle: 'italic',
+          fontWeight: '600',
+          margin: '0 0 12px 0'
+        }}>
+          Where Hearts Sync and Stories Begin
+        </p>
         <p style={{
           fontSize: '14px',
           color: 'rgba(255, 255, 255, 0.8)',
           margin: 0
         }}>
-          Welcome back, {user?.fullName || 'Explorer'}
+          Welcome, {user?.fullName || 'Explorer'}
         </p>
       </div>
 
@@ -214,7 +245,41 @@ export default function Home() {
         minHeight: 'calc(100vh - 200px)'
       }}>
         <AnimatePresence mode="wait">
-          {currentProfile && (
+          {allProfilesPassed ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              style={{
+                textAlign: 'center',
+                color: 'white',
+                padding: '40px'
+              }}
+            >
+              <div style={{
+                fontSize: '60px',
+                marginBottom: '20px'
+              }}>
+                🦋
+              </div>
+              <h2 style={{
+                fontSize: '28px',
+                fontWeight: 'bold',
+                marginBottom: '12px',
+                background: 'linear-gradient(to right, #22d3ee, #ec4899)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}>
+                That's all for now
+              </h2>
+              <p style={{
+                fontSize: '16px',
+                color: 'rgba(255, 255, 255, 0.7)',
+                fontStyle: 'italic'
+              }}>
+                Come back later
+              </p>
+            </motion.div>
+          ) : currentProfile && (
             <motion.div
               key={currentProfile.id}
               initial={{ opacity: 0, scale: 0.8, y: 50 }}
@@ -223,11 +288,11 @@ export default function Home() {
               style={{
                 width: '100%',
                 maxWidth: '400px',
-                background: 'rgba(255, 255, 255, 0.1)',
+                background: 'rgba(0, 0, 0, 0.4)',
                 backdropFilter: 'blur(20px)',
                 borderRadius: '24px',
                 overflow: 'hidden',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
                 boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
               }}
             >
@@ -261,7 +326,7 @@ export default function Home() {
                   position: 'absolute',
                   top: '16px',
                   right: '16px',
-                  background: 'rgba(255, 255, 255, 0.2)',
+                  background: 'rgba(0, 0, 0, 0.4)',
                   backdropFilter: 'blur(10px)',
                   borderRadius: '20px',
                   padding: '8px 12px',
@@ -334,7 +399,7 @@ export default function Home() {
                       padding: '16px',
                       borderRadius: '12px',
                       border: '2px solid rgba(255, 255, 255, 0.3)',
-                      background: 'rgba(255, 255, 255, 0.1)',
+                      background: 'rgba(0, 0, 0, 0.3)',
                       color: 'white',
                       fontSize: '16px',
                       fontWeight: '600',
@@ -385,26 +450,6 @@ export default function Home() {
             </motion.div>
           )}
         </AnimatePresence>
-      </div>
-
-      {/* Profile count indicator */}
-      <div style={{
-        position: 'absolute',
-        bottom: '100px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '20px',
-        padding: '8px 16px'
-      }}>
-        <span style={{
-          fontSize: '12px',
-          color: 'rgba(255, 255, 255, 0.8)',
-          fontWeight: '500'
-        }}>
-          {currentIndex + 1} of {profiles.length}
-        </span>
       </div>
     </div>
   );

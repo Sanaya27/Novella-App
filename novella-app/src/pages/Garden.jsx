@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import { Camera, Flower, Star, Eye } from "lucide-react";
+import { Camera, Flower, Star } from "lucide-react";
 import ButterflyAnimation from "../components/dating/ButterflyAnimation";
 
 // Add CSS animations for mystery effects
@@ -19,6 +19,85 @@ const styles = `
     0%, 100% { transform: translateY(0px) rotate(0deg); }
     50% { transform: translateY(-5px) rotate(5deg); }
 }
+
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounceIn {
+    0% { opacity: 0; transform: scale(0.3); }
+    50% { opacity: 1; transform: scale(1.05); }
+    70% { transform: scale(0.9); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes glowPulse {
+    0%, 100% { box-shadow: 0 0 5px currentColor; }
+    50% { box-shadow: 0 0 20px currentColor, 0 0 30px currentColor; }
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+    .garden-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+    .butterfly-card {
+        padding: 12px !important;
+    }
+    .ar-button {
+        padding: 10px 20px !important;
+        font-size: 12px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .garden-header {
+        font-size: 28px !important;
+    }
+    .garden-tagline {
+        font-size: 16px !important;
+    }
+    .modal-content {
+        margin: 8px !important;
+        padding: 16px !important;
+    }
+}
+
+/* Accessibility improvements */
+.focus-visible {
+    outline: 2px solid #22d3ee !important;
+    outline-offset: 2px !important;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .butterfly-card {
+        border-width: 2px !important;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
 `;
 
 // Inject styles
@@ -32,8 +111,9 @@ if (typeof document !== 'undefined') {
 export default function Garden() {
     const [arMode, setArMode] = useState(false);
     const [selectedSpecies, setSelectedSpecies] = useState(null);
+    const [flyingButterflies, setFlyingButterflies] = useState([]);
 
-    const butterflySpecies = [
+    const butterflySpecies = useMemo(() => [
         { 
             id: 1, 
             name: "Azure Morpho", 
@@ -114,7 +194,7 @@ export default function Garden() {
             description: "Timeless love butterflies - Symbol of unbreakable connection",
             requirement: "Complete all milestones and sync for 1 hour total"
         }
-    ];
+    ], []);
 
     const witheredFlowers = [
         { id: 1, name: "Sarah", reason: "No reply for 3 days", days: 3 },
@@ -128,38 +208,94 @@ export default function Garden() {
         Legendary: "rgba(251, 146, 60, 1)" // text-orange-400
     };
 
+    // Function to generate flying butterflies in AR mode
+    const generateFlyingButterflies = useCallback(() => {
+        const butterflies = [];
+        const unlockedSpecies = butterflySpecies.filter(s => s.unlocked);
+        
+        // Create 15 flying butterflies with random properties
+        for (let i = 0; i < 15; i++) {
+            const species = unlockedSpecies[Math.floor(Math.random() * unlockedSpecies.length)];
+            butterflies.push({
+                id: Date.now() + i,
+                speciesId: species.id,
+                x: Math.random() * 100,
+                y: Math.random() * 100,
+                size: Math.random() > 0.7 ? 'large' : Math.random() > 0.4 ? 'medium' : 'small',
+                color: species.color,
+                speed: 0.5 + Math.random() * 0.5,
+                delay: Math.random() * 2,
+                direction: Math.random() > 0.5 ? 1 : -1
+            });
+        }
+        
+        console.log('Generating flying butterflies:', butterflies); // Debug log
+        setFlyingButterflies(butterflies);
+    }, [butterflySpecies]);
+
+    // Generate butterflies when AR mode is activated
+    useEffect(() => {
+        if (arMode) {
+            console.log('AR mode activated, generating butterflies'); // Debug log
+            generateFlyingButterflies();
+            // Regenerate butterflies every 8 seconds
+            const interval = setInterval(() => {
+                console.log('Regenerating butterflies'); // Debug log
+                generateFlyingButterflies();
+            }, 8000);
+            return () => clearInterval(interval);
+        } else {
+            console.log('AR mode deactivated, clearing butterflies'); // Debug log
+            setFlyingButterflies([]);
+        }
+    }, [arMode, generateFlyingButterflies]);
+
     return (
-        <div style={{
-            minHeight: '100vh',
-            padding: '16px',
-            paddingTop: '64px'
-        }}>
+        <div 
+            style={{
+                minHeight: '100vh',
+                padding: '16px',
+                paddingTop: '64px',
+                background: 'linear-gradient(135deg, #6B46C1 0%, #9333EA 50%, #EC4899 100%)'
+            }}
+            role="main"
+            aria-label="Symbiosis Garden - Your butterfly collection"
+        >
             {/* Header */}
             <motion.div 
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
                 style={{
                     textAlign: 'center',
                     marginBottom: '32px'
                 }}
             >
-                <h1 style={{
-                    fontSize: '36px',
-                    fontWeight: 'bold',
-                    background: 'linear-gradient(to right, #22d3ee, #ec4899)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    marginBottom: '8px',
-                    fontStyle: 'italic'
-                }}>
+                <h1 
+                    className="garden-header"
+                    style={{
+                        fontSize: '36px',
+                        fontWeight: 'bold',
+                        background: 'linear-gradient(to right, #22d3ee, #ec4899)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        marginBottom: '8px',
+                        fontStyle: 'italic',
+                        animation: 'fadeInUp 0.8s ease-out'
+                    }}
+                >
                     Symbiosis Garden
                 </h1>
-                <p style={{
-                    color: '#22d3ee',
-                    fontStyle: 'italic',
-                    fontSize: '18px',
-                    fontWeight: '600'
-                }}>
+                <p 
+                    className="garden-tagline"
+                    style={{
+                        color: '#22d3ee',
+                        fontStyle: 'italic',
+                        fontSize: '18px',
+                        fontWeight: '600',
+                        animation: 'fadeInUp 0.8s ease-out 0.2s both'
+                    }}
+                >
                     🦋 "Your collection of connection butterflies."
                 </p>
             </motion.div>
@@ -168,12 +304,14 @@ export default function Garden() {
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
                 style={{
                     textAlign: 'center',
                     marginBottom: '32px'
                 }}
             >
                 <button
+                    className="ar-button focus-visible"
                     onClick={() => setArMode(!arMode)}
                     style={{
                         background: arMode 
@@ -190,10 +328,13 @@ export default function Garden() {
                         fontSize: '14px',
                         fontWeight: '600',
                         fontStyle: 'italic',
-                        transition: 'all 0.3s ease'
+                        transition: 'all 0.3s ease',
+                        animation: arMode ? 'glowPulse 2s infinite' : 'none'
                     }}
+                    aria-label={arMode ? 'Exit AR viewing mode' : 'Enter AR viewing mode'}
+                    tabIndex={0}
                 >
-                    <Camera size={20} />
+                    <Camera size={20} aria-hidden="true" />
                     {arMode ? 'Exit AR View' : 'Enter AR Mode'}
                 </button>
             </motion.div>
@@ -212,7 +353,7 @@ export default function Garden() {
                         border: '1px solid rgba(34, 211, 238, 0.5)',
                         position: 'relative',
                         overflow: 'hidden',
-                        backgroundImage: 'url(https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800)',
+                        backgroundImage: 'url(https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800)', // Forest image
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         backgroundBlendMode: 'overlay'
@@ -236,18 +377,21 @@ export default function Garden() {
                         </p>
                     </div>
                     
-                    {/* Floating butterflies in AR */}
+                    {/* Flying butterflies in AR */}
                     <div style={{
                         position: 'relative',
-                        height: '256px'
+                        height: '256px',
+                        overflow: 'hidden'
                     }}>
+                        {/* Existing static butterflies */}
                         {butterflySpecies.filter(s => s.unlocked).map((species, index) => (
                             <motion.div
                                 key={species.id}
                                 style={{
                                     position: 'absolute',
                                     left: `${20 + index * 25}%`,
-                                    top: `${30 + Math.sin(index) * 20}%`
+                                    top: `${30 + Math.sin(index) * 20}%`,
+                                    zIndex: 10
                                 }}
                                 animate={{
                                     x: [0, 50, 0],
@@ -260,10 +404,54 @@ export default function Garden() {
                                     ease: "easeInOut"
                                 }}
                             >
-                                <ButterflyAnimation 
-                                    size="medium"
-                                    color={species.color}
-                                    bpm={70 + index * 5}
+                                {/* Use local butterfly image instead of animation */}
+                                <img 
+                                    src="/butterflies/BFly_Col_diffuse2.png"
+                                    alt="Butterfly"
+                                    style={{
+                                        width: '60px',
+                                        height: '60px',
+                                        filter: `drop-shadow(0 0 8px ${species.color})`
+                                    }}
+                                />
+                            </motion.div>
+                        ))}
+                        
+                        {/* Flying butterflies */}
+                        {flyingButterflies.map((butterfly) => (
+                            <motion.div
+                                key={butterfly.id}
+                                style={{
+                                    position: 'absolute',
+                                    left: `${butterfly.x}%`,
+                                    top: `${butterfly.y}%`,
+                                    zIndex: 20
+                                }}
+                                initial={{ 
+                                    x: `${butterfly.direction * 100}%`,
+                                    y: `${Math.random() * 100}%`,
+                                    opacity: 0
+                                }}
+                                animate={{ 
+                                    x: `${butterfly.direction * -200}%`,
+                                    y: `${butterfly.y + (Math.random() * 40 - 20)}%`,
+                                    opacity: [0, 1, 1, 0]
+                                }}
+                                transition={{
+                                    duration: 8 / butterfly.speed,
+                                    delay: butterfly.delay,
+                                    ease: "linear"
+                                }}
+                            >
+                                {/* Use local butterfly image instead of animation */}
+                                <img 
+                                    src={`/butterflies/BFly_Col_diffuse${Math.floor(Math.random() * 2) + 2}.png`}
+                                    alt="Butterfly"
+                                    style={{
+                                        width: butterfly.size === 'large' ? '80px' : butterfly.size === 'medium' ? '60px' : '40px',
+                                        height: butterfly.size === 'large' ? '80px' : butterfly.size === 'medium' ? '60px' : '40px',
+                                        filter: `drop-shadow(0 0 8px ${butterfly.color})`
+                                    }}
                                 />
                             </motion.div>
                         ))}
@@ -273,7 +461,9 @@ export default function Garden() {
                         <p style={{
                             color: 'rgba(255, 255, 255, 0.8)',
                             fontSize: '14px',
-                            fontStyle: 'italic'
+                            fontStyle: 'italic',
+                            position: 'relative',
+                            zIndex: 30
                         }}>
                             Move your device to see butterflies dance in your environment
                         </p>
@@ -283,13 +473,18 @@ export default function Garden() {
                 /* Regular Garden View */
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     {/* Butterfly Collection */}
-                    <div style={{
-                        background: 'rgba(0, 0, 0, 0.2)',
-                        backdropFilter: 'blur(20px)',
-                        borderRadius: '24px',
-                        padding: '24px',
-                        border: '1px solid rgba(139, 92, 246, 0.3)'
-                    }}>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.4 }}
+                        style={{
+                            background: 'rgba(0, 0, 0, 0.4)',
+                            backdropFilter: 'blur(20px)',
+                            borderRadius: '24px',
+                            padding: '24px',
+                            border: '1px solid rgba(139, 92, 246, 0.3)'
+                        }}
+                    >
                         <h2 style={{
                             fontSize: '20px',
                             fontWeight: '600',
@@ -300,21 +495,39 @@ export default function Garden() {
                             alignItems: 'center',
                             gap: '8px'
                         }}>
-                            <Star size={20} style={{ color: '#fbbf24' }} />
+                            <Star size={20} style={{ color: '#fbbf24' }} aria-hidden="true" />
                             Butterfly Collection
+                            <span className="sr-only">- {butterflySpecies.filter(s => s.unlocked).length} of {butterflySpecies.length} butterflies unlocked</span>
                         </h2>
                         
-                        <div style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'repeat(2, 1fr)',
-                            gap: '16px'
-                        }}>
-                            {butterflySpecies.map((species) => (
+                        <div 
+                            className="garden-grid"
+                            style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(2, 1fr)',
+                                gap: '16px'
+                            }}
+                            role="grid"
+                            aria-label="Butterfly collection grid"
+                        >
+                            {butterflySpecies.map((species, index) => (
                                 <motion.div
                                     key={species.id}
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    transition={{ delay: species.id * 0.1 }}
+                                    initial={{ opacity: 0, scale: 0.8, rotateY: -30 }}
+                                    animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+                                    transition={{ 
+                                        duration: 0.5, 
+                                        delay: 0.5 + (index * 0.1),
+                                        type: "spring",
+                                        stiffness: 100
+                                    }}
+                                    whileHover={{ 
+                                        scale: 1.05, 
+                                        y: -5,
+                                        transition: { duration: 0.2 }
+                                    }}
+                                    whileTap={{ scale: 0.95 }}
+                                    className="butterfly-card focus-visible"
                                     style={{
                                         padding: '16px',
                                         borderRadius: '16px',
@@ -325,14 +538,19 @@ export default function Garden() {
                                             ? 'rgba(255, 255, 255, 0.05)' 
                                             : 'rgba(31, 41, 55, 0.3)',
                                         cursor: 'pointer',
-                                        transition: 'all 0.3s ease'
-                                    }}
-                                    whileHover={{ 
-                                        background: species.unlocked 
-                                            ? 'rgba(255, 255, 255, 0.1)' 
-                                            : 'rgba(31, 41, 55, 0.3)' 
+                                        transition: 'all 0.3s ease',
+                                        animation: species.unlocked ? 'bounceIn 0.6s ease-out' : 'none'
                                     }}
                                     onClick={() => setSelectedSpecies(species)}
+                                    role="gridcell"
+                                    tabIndex={0}
+                                    aria-label={`${species.name} butterfly, ${species.rarity} rarity, ${species.unlocked ? 'unlocked' : 'locked'}. ${species.description}`}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' || e.key === ' ') {
+                                            e.preventDefault();
+                                            setSelectedSpecies(species);
+                                        }
+                                    }}
                                 >
                                     <div style={{ textAlign: 'center' }}>
                                         <div style={{
@@ -513,16 +731,21 @@ export default function Garden() {
                                 </motion.div>
                             ))}
                         </div>
-                    </div>
+                    </motion.div>
 
                     {/* Withered Flowers (Ghosting Memorial) */}
-                    <div style={{
-                        background: 'rgba(0, 0, 0, 0.2)',
-                        backdropFilter: 'blur(20px)',
-                        borderRadius: '24px',
-                        padding: '24px',
-                        border: '1px solid rgba(75, 85, 99, 0.3)'
-                    }}>
+                    <motion.div 
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: 0.8 }}
+                        style={{
+                            background: 'rgba(0, 0, 0, 0.4)',
+                            backdropFilter: 'blur(20px)',
+                            borderRadius: '24px',
+                            padding: '24px',
+                            border: '1px solid rgba(75, 85, 99, 0.3)'
+                        }}
+                    >
                         <h2 style={{
                             fontSize: '20px',
                             fontWeight: '600',
@@ -533,8 +756,9 @@ export default function Garden() {
                             alignItems: 'center',
                             gap: '8px'
                         }}>
-                            <Flower size={20} style={{ color: '#9ca3af' }} />
+                            <Flower size={20} style={{ color: '#9ca3af' }} aria-hidden="true" />
                             Withered Garden
+                            <span className="sr-only">- Memorial for past connections</span>
                         </h2>
                         
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -588,7 +812,7 @@ export default function Garden() {
                         }}>
                             "Every connection teaches us something beautiful" 🌙
                         </p>
-                    </div>
+                    </motion.div>
                 </div>
             )}
 
@@ -774,13 +998,16 @@ export default function Garden() {
                                     </div>
                                 </div>
                             
-                            <h3 style={{
-                                fontSize: '24px',
-                                fontWeight: 'bold',
-                                color: 'white',
-                                marginBottom: '8px',
-                                fontStyle: 'italic'
-                            }}>
+                            <h3 
+                                id="modal-title"
+                                style={{
+                                    fontSize: '24px',
+                                    fontWeight: 'bold',
+                                    color: 'white',
+                                    marginBottom: '8px',
+                                    fontStyle: 'italic'
+                                }}
+                            >
                                 {selectedSpecies.name}
                             </h3>
                             
@@ -792,11 +1019,14 @@ export default function Garden() {
                                 {selectedSpecies.rarity}
                             </p>
                             
-                            <p style={{
-                                color: '#c4b5fd',
-                                fontStyle: 'italic',
-                                marginBottom: '16px'
-                            }}>
+                            <p 
+                                id="modal-description"
+                                style={{
+                                    color: '#c4b5fd',
+                                    fontStyle: 'italic',
+                                    marginBottom: '16px'
+                                }}
+                            >
                                 {selectedSpecies.description}
                             </p>
                             
@@ -826,6 +1056,7 @@ export default function Garden() {
                             
                             <button
                                 onClick={() => setSelectedSpecies(null)}
+                                className="focus-visible"
                                 style={{
                                     width: '100%',
                                     background: 'linear-gradient(to right, #7c3aed, #ec4899)',
@@ -844,6 +1075,8 @@ export default function Garden() {
                                 onMouseLeave={(e) => {
                                     e.target.style.background = 'linear-gradient(to right, #7c3aed, #ec4899)';
                                 }}
+                                aria-label="Close butterfly details modal"
+                                autoFocus
                             >
                                 Close
                             </button>

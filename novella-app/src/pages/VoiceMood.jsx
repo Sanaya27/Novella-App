@@ -1,47 +1,62 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Mic, MicOff, Play, Pause, Volume2, Heart, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Mic, MicOff, Send } from 'lucide-react';
 
-const moodColors = {
-    happy: '#f59e0b',
-    romantic: '#ec4899',
-    calm: '#06b6d4',
-    excited: '#ef4444',
-    dreamy: '#8b5cf6',
-    playful: '#10b981'
+const moodSpectrum = {
+    'golden_pollen': {
+        name: 'Golden Pollen',
+        emoji: '✨',
+        description: 'Flirty and playful',
+        color: '#fbbf24',
+        gradient: 'linear-gradient(135deg, #fbbf24, #f59e0b)'
+    },
+    'blue_mist': {
+        name: 'Blue Mist', 
+        emoji: '🌊',
+        description: 'Calm and serene',
+        color: '#06b6d4',
+        gradient: 'linear-gradient(135deg, #06b6d4, #0891b2)'
+    },
+    'silver_whisper': {
+        name: 'Silver Whisper',
+        emoji: '🌙',
+        description: 'Mysterious and intimate',
+        color: '#64748b',
+        gradient: 'linear-gradient(135deg, #64748b, #475569)'
+    },
+    'rose_ember': {
+        name: 'Rose Ember',
+        emoji: '🔥',
+        description: 'Passionate and intense',
+        color: '#ec4899',
+        gradient: 'linear-gradient(135deg, #ec4899, #db2777)'
+    }
 };
 
-const moodEmojis = {
-    happy: '😊',
-    romantic: '😍',
-    calm: '😌',
-    excited: '🤩',
-    dreamy: '😍',
-    playful: '😄'
-};
+const recentMessages = [
+    {
+        id: 1,
+        mood: 'golden_pollen',
+        analysis: 'Excited and flirty energy detected',
+        timestamp: '2:14 PM',
+        duration: '0:15'
+    },
+    {
+        id: 2,
+        mood: 'blue_mist',
+        analysis: 'Calm and thoughtful tone',
+        timestamp: '2:12 PM',
+        duration: '0:23'
+    }
+];
 
 export default function VoiceMood() {
     const [isRecording, setIsRecording] = useState(false);
-    const [recordedAudio, setRecordedAudio] = useState(null);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [currentMood, setCurrentMood] = useState('happy');
-    const [voiceMessages, setVoiceMessages] = useState([
-        {
-            id: 1,
-            mood: 'romantic',
-            duration: '0:15',
-            timestamp: '2 hours ago',
-            waveform: [20, 45, 30, 60, 40, 55, 35, 50, 25, 40]
-        },
-        {
-            id: 2,
-            mood: 'excited',
-            duration: '0:23',
-            timestamp: '1 day ago',
-            waveform: [15, 55, 40, 70, 35, 65, 45, 60, 30, 50]
-        }
-    ]);
+    const [isAnalyzing, setIsAnalyzing] = useState(false);
+    const [analyzedMood, setAnalyzedMood] = useState(null);
     const [recordingTime, setRecordingTime] = useState(0);
+    const [mediaRecorder, setMediaRecorder] = useState(null);
+    const [audioBlob, setAudioBlob] = useState(null);
     const recordingInterval = useRef(null);
 
     useEffect(() => {
@@ -56,23 +71,68 @@ export default function VoiceMood() {
         return () => clearInterval(recordingInterval.current);
     }, [isRecording]);
 
-    const startRecording = () => {
-        setIsRecording(true);
-        setRecordingTime(0);
-        // Simulate recording
+    const startRecording = async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const recorder = new MediaRecorder(stream);
+            const audioChunks = [];
+
+            recorder.ondataavailable = (event) => {
+                audioChunks.push(event.data);
+            };
+
+            recorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                setAudioBlob(audioBlob);
+                stream.getTracks().forEach(track => track.stop());
+                analyzeVoice();
+            };
+
+            recorder.start();
+            setMediaRecorder(recorder);
+            setIsRecording(true);
+            setRecordingTime(0);
+        } catch (error) {
+            console.error('Error accessing microphone:', error);
+            alert('Please allow microphone access to record voice messages.');
+        }
     };
 
     const stopRecording = () => {
-        setIsRecording(false);
-        // Simulate saving the recording
-        const newMessage = {
-            id: voiceMessages.length + 1,
-            mood: currentMood,
-            duration: `0:${recordingTime.toString().padStart(2, '0')}`,
-            timestamp: 'Just now',
-            waveform: Array.from({ length: 10 }, () => Math.floor(Math.random() * 70) + 15)
-        };
-        setVoiceMessages([newMessage, ...voiceMessages]);
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
+            setIsRecording(false);
+            setIsAnalyzing(true);
+        }
+    };
+
+    const analyzeVoice = () => {
+        // Simulate voice analysis
+        setTimeout(() => {
+            const moods = Object.keys(moodSpectrum);
+            const randomMood = moods[Math.floor(Math.random() * moods.length)];
+            setAnalyzedMood(randomMood);
+            setIsAnalyzing(false);
+        }, 2000); // 2 second analysis
+    };
+
+    const sendVoiceMood = () => {
+        if (analyzedMood) {
+            // Here you would send the voice mood to the match
+            console.log('Sending voice mood:', analyzedMood);
+            alert(`Voice mood "${moodSpectrum[analyzedMood].name}" sent to your match!`);
+            
+            // Reset state
+            setAnalyzedMood(null);
+            setAudioBlob(null);
+            setRecordingTime(0);
+        }
+    };
+
+    const resetRecording = () => {
+        setAnalyzedMood(null);
+        setAudioBlob(null);
+        setIsAnalyzing(false);
         setRecordingTime(0);
     };
 
@@ -86,7 +146,8 @@ export default function VoiceMood() {
         <div style={{
             minHeight: '100vh',
             padding: '16px',
-            paddingTop: '40px'
+            paddingTop: '40px',
+            background: 'linear-gradient(135deg, #6B46C1 0%, #9333EA 50%, #EC4899 100%)'
         }}>
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -100,308 +161,501 @@ export default function VoiceMood() {
                     gap: '12px',
                     marginBottom: '16px'
                 }}>
-                    <motion.div
-                        animate={{
-                            scale: isRecording ? [1, 1.2, 1] : 1,
-                            rotate: isRecording ? [0, 5, -5, 0] : 0
-                        }}
-                        transition={{
-                            duration: 0.5,
-                            repeat: isRecording ? Infinity : 0
-                        }}
-                    >
-                        <Mic style={{
-                            width: '48px',
-                            height: '48px',
-                            color: moodColors[currentMood]
-                        }} />
-                    </motion.div>
                     <h1 style={{
-                        fontSize: '48px',
+                        fontSize: '42px',
                         fontWeight: 'bold',
-                        background: `linear-gradient(to right, ${moodColors[currentMood]}, #ec4899)`,
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
+                        color: '#22d3ee',
                         margin: 0,
                         fontStyle: 'italic'
-                    }} className="satoshi">
-                        Voice Mood
+                    }}>
+                        Voice Mood Analyzer
                     </h1>
                 </div>
                 
                 <p style={{
-                    color: '#c4b5fd',
+                    color: 'rgba(255, 255, 255, 0.8)',
                     fontStyle: 'italic',
-                    marginBottom: '24px'
+                    fontSize: '18px',
+                    marginBottom: '0'
                 }}>
-                    Express your emotions through voice and share your mood
+                    Transform your voice into beautiful emotions
                 </p>
-
-                {/* Mood Selector */}
-                <div style={{
-                    display: 'flex',
-                    gap: '8px',
-                    justifyContent: 'center',
-                    flexWrap: 'wrap',
-                    marginBottom: '32px'
-                }}>
-                    {Object.entries(moodColors).map(([mood, color]) => (
-                        <motion.button
-                            key={mood}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => setCurrentMood(mood)}
-                            style={{
-                                background: currentMood === mood 
-                                    ? `linear-gradient(135deg, ${color}, ${color}aa)` 
-                                    : 'rgba(255, 255, 255, 0.1)',
-                                border: `2px solid ${currentMood === mood ? color : 'rgba(255, 255, 255, 0.2)'}`,
-                                borderRadius: '20px',
-                                padding: '8px 16px',
-                                color: 'white',
-                                fontSize: '14px',
-                                fontWeight: '600',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '6px',
-                                textTransform: 'capitalize'
-                            }}
-                        >
-                            <span>{moodEmojis[mood]}</span>
-                            {mood}
-                        </motion.button>
-                    ))}
-                </div>
             </motion.div>
 
             {/* Recording Interface */}
             <div style={{
-                background: 'rgba(0, 0, 0, 0.3)',
+                background: 'rgba(0, 0, 0, 0.4)',
                 backdropFilter: 'blur(20px)',
                 borderRadius: '24px',
-                padding: '32px',
+                padding: '48px 32px',
                 border: '1px solid rgba(139, 92, 246, 0.2)',
                 textAlign: 'center',
-                marginBottom: '32px'
+                marginBottom: '32px',
+                minHeight: '400px',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center'
             }}>
-                {/* Visual Waveform */}
-                {isRecording && (
-                    <div style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'end',
-                        gap: '2px',
-                        height: '60px',
-                        marginBottom: '24px'
-                    }}>
-                        {Array.from({ length: 20 }).map((_, i) => (
-                            <motion.div
-                                key={i}
-                                style={{
-                                    width: '3px',
-                                    background: `linear-gradient(to top, ${moodColors[currentMood]}, ${moodColors[currentMood]}aa)`,
-                                    borderRadius: '2px',
-                                    minHeight: '4px'
-                                }}
-                                animate={{
-                                    height: [`${Math.random() * 40 + 10}px`, `${Math.random() * 60 + 20}px`]
-                                }}
-                                transition={{
-                                    duration: 0.3,
-                                    repeat: Infinity,
-                                    repeatType: 'reverse',
-                                    delay: i * 0.05
-                                }}
-                            />
-                        ))}
-                    </div>
+                {isRecording ? (
+                    // Recording State
+                    <>
+                        <h2 style={{
+                            color: '#22d3ee',
+                            fontSize: '24px',
+                            fontWeight: 'bold',
+                            marginBottom: '8px',
+                            fontStyle: 'italic'
+                        }}>
+                            Listening to your voice...
+                        </h2>
+                        <p style={{
+                            color: 'rgba(255, 255, 255, 0.8)',
+                            fontSize: '16px',
+                            marginBottom: '32px',
+                            fontStyle: 'italic'
+                        }}>
+                            Analyzing emotional patterns
+                        </p>
+                        
+                        {/* Animated Waveform */}
+                        <div style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'end',
+                            gap: '3px',
+                            height: '80px',
+                            marginBottom: '32px'
+                        }}>
+                            {Array.from({ length: 12 }).map((_, i) => (
+                                <motion.div
+                                    key={i}
+                                    style={{
+                                        width: '6px',
+                                        background: 'linear-gradient(to top, #22d3ee, #8b5cf6, #ec4899)',
+                                        borderRadius: '3px',
+                                        minHeight: '8px'
+                                    }}
+                                    animate={{
+                                        height: [`${20 + Math.random() * 30}px`, `${40 + Math.random() * 40}px`]
+                                    }}
+                                    transition={{
+                                        duration: 0.3,
+                                        repeat: Infinity,
+                                        repeatType: 'reverse',
+                                        delay: i * 0.05
+                                    }}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Recording Button - Active */}
+                        <motion.button
+                            onClick={stopRecording}
+                            animate={{
+                                scale: [1, 1.1, 1],
+                                boxShadow: ['0 0 0 0 #ef444444', '0 0 0 20px #ef444400']
+                            }}
+                            transition={{
+                                duration: 1,
+                                repeat: Infinity
+                            }}
+                            style={{
+                                width: '100px',
+                                height: '100px',
+                                borderRadius: '50%',
+                                background: '#ef4444',
+                                border: 'none',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                margin: '0 auto',
+                                marginBottom: '24px'
+                            }}
+                        >
+                            <Mic style={{
+                                width: '40px',
+                                height: '40px',
+                                color: 'white'
+                            }} />
+                        </motion.button>
+
+                        <p style={{
+                            color: 'rgba(255, 255, 255, 0.8)',
+                            fontStyle: 'italic',
+                            fontSize: '16px'
+                        }}>
+                            Recording voice patterns...
+                        </p>
+                        
+                        <div style={{
+                            color: '#22d3ee',
+                            fontSize: '18px',
+                            fontWeight: 'bold',
+                            marginTop: '16px'
+                        }}>
+                            {formatTime(recordingTime)}
+                        </div>
+                    </>
+                ) : isAnalyzing ? (
+                    // Analyzing State
+                    <>
+                        <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                            style={{
+                                width: '60px',
+                                height: '60px',
+                                border: '3px solid #22d3ee',
+                                borderTop: '3px solid transparent',
+                                borderRadius: '50%',
+                                marginBottom: '24px'
+                            }}
+                        />
+                        <h2 style={{
+                            color: '#22d3ee',
+                            fontSize: '24px',
+                            fontWeight: 'bold',
+                            fontStyle: 'italic'
+                        }}>
+                            Analyzing your voice...
+                        </h2>
+                    </>
+                ) : analyzedMood ? (
+                    // Analysis Complete State
+                    <>
+                        {/* Floating Particles */}
+                        <div style={{
+                            position: 'absolute',
+                            inset: 0,
+                            pointerEvents: 'none'
+                        }}>
+                            {Array.from({ length: 15 }).map((_, i) => (
+                                <motion.div
+                                    key={i}
+                                    style={{
+                                        position: 'absolute',
+                                        width: '6px',
+                                        height: '6px',
+                                        borderRadius: '50%',
+                                        background: `rgba(${Math.random() > 0.5 ? '34, 211, 238' : '139, 92, 246'}, 0.6)`,
+                                        left: `${Math.random() * 100}%`,
+                                        top: `${Math.random() * 100}%`
+                                    }}
+                                    animate={{
+                                        y: [0, -20, 0],
+                                        opacity: [0.3, 1, 0.3]
+                                    }}
+                                    transition={{
+                                        duration: 2 + Math.random() * 2,
+                                        repeat: Infinity,
+                                        delay: Math.random() * 2
+                                    }}
+                                />
+                            ))}
+                        </div>
+
+                        {/* Detected Mood */}
+                        <motion.div
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            style={{
+                                textAlign: 'center',
+                                marginBottom: '32px'
+                            }}
+                        >
+                            <div style={{
+                                fontSize: '80px',
+                                marginBottom: '16px'
+                            }}>
+                                {moodSpectrum[analyzedMood].emoji}
+                            </div>
+                            <h2 style={{
+                                color: moodSpectrum[analyzedMood].color,
+                                fontSize: '32px',
+                                fontWeight: 'bold',
+                                marginBottom: '8px',
+                                fontStyle: 'italic'
+                            }}>
+                                {moodSpectrum[analyzedMood].name}
+                            </h2>
+                            <p style={{
+                                color: 'rgba(255, 255, 255, 0.8)',
+                                fontSize: '18px',
+                                fontStyle: 'italic'
+                            }}>
+                                {moodSpectrum[analyzedMood].description}
+                            </p>
+                        </motion.div>
+
+                        {/* Send Button */}
+                        <motion.button
+                            onClick={sendVoiceMood}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            style={{
+                                background: 'linear-gradient(135deg, #8b5cf6, #ec4899)',
+                                border: 'none',
+                                borderRadius: '16px',
+                                padding: '16px 32px',
+                                color: 'white',
+                                fontSize: '18px',
+                                fontWeight: 'bold',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px',
+                                marginBottom: '16px'
+                            }}
+                        >
+                            <Send style={{ width: '20px', height: '20px' }} />
+                            Send Voice Mood
+                        </motion.button>
+
+                        <p style={{
+                            color: 'rgba(255, 255, 255, 0.7)',
+                            fontSize: '14px',
+                            fontStyle: 'italic'
+                        }}>
+                            Mood analyzed! Send to your match
+                        </p>
+                        
+                        <button
+                            onClick={resetRecording}
+                            style={{
+                                background: 'transparent',
+                                border: '1px solid rgba(255, 255, 255, 0.3)',
+                                borderRadius: '8px',
+                                padding: '8px 16px',
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                fontSize: '14px',
+                                cursor: 'pointer',
+                                marginTop: '16px'
+                            }}
+                        >
+                            Record Again
+                        </button>
+                    </>
+                ) : (
+                    // Initial State
+                    <>
+                        {/* Record Button */}
+                        <motion.button
+                            onClick={startRecording}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            style={{
+                                width: '120px',
+                                height: '120px',
+                                borderRadius: '50%',
+                                background: 'linear-gradient(135deg, #22d3ee, #8b5cf6, #ec4899)',
+                                border: 'none',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                margin: '0 auto',
+                                marginBottom: '24px'
+                            }}
+                        >
+                            <Mic style={{
+                                width: '48px',
+                                height: '48px',
+                                color: 'white'
+                            }} />
+                        </motion.button>
+
+                        <p style={{
+                            color: 'rgba(255, 255, 255, 0.8)',
+                            fontStyle: 'italic',
+                            fontSize: '16px',
+                            margin: 0
+                        }}>
+                            Tap to record a voice message
+                        </p>
+                    </>
                 )}
-
-                {/* Recording Timer */}
-                {isRecording && (
-                    <div style={{
-                        color: moodColors[currentMood],
-                        fontSize: '24px',
-                        fontWeight: 'bold',
-                        marginBottom: '24px',
-                        fontStyle: 'italic'
-                    }}>
-                        {formatTime(recordingTime)}
-                    </div>
-                )}
-
-                {/* Record Button */}
-                <motion.button
-                    onMouseDown={startRecording}
-                    onMouseUp={stopRecording}
-                    onTouchStart={startRecording}
-                    onTouchEnd={stopRecording}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    animate={{
-                        scale: isRecording ? [1, 1.1, 1] : 1,
-                        boxShadow: isRecording 
-                            ? [`0 0 0 0 ${moodColors[currentMood]}44`, `0 0 0 20px ${moodColors[currentMood]}00`]
-                            : 'none'
-                    }}
-                    transition={{
-                        duration: isRecording ? 1 : 0.2,
-                        repeat: isRecording ? Infinity : 0
-                    }}
-                    style={{
-                        width: '100px',
-                        height: '100px',
-                        borderRadius: '50%',
-                        background: isRecording 
-                            ? `linear-gradient(135deg, ${moodColors[currentMood]}, #ec4899)` 
-                            : 'rgba(255, 255, 255, 0.1)',
-                        border: `3px solid ${moodColors[currentMood]}`,
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        margin: '0 auto',
-                        marginBottom: '16px'
-                    }}
-                >
-                    {isRecording ? (
-                        <MicOff style={{
-                            width: '40px',
-                            height: '40px',
-                            color: 'white'
-                        }} />
-                    ) : (
-                        <Mic style={{
-                            width: '40px',
-                            height: '40px',
-                            color: moodColors[currentMood]
-                        }} />
-                    )}
-                </motion.button>
-
-                <p style={{
-                    color: '#c4b5fd',
-                    fontStyle: 'italic',
-                    fontSize: '14px',
-                    margin: 0
-                }}>
-                    {isRecording ? 'Release to stop recording' : `Hold to record a ${currentMood} mood message`}
-                </p>
             </div>
 
-            {/* Voice Messages History */}
+            {/* Mood Spectrum */}
+            {!analyzedMood && (
+                <div style={{
+                    marginBottom: '32px'
+                }}>
+                    <h2 style={{
+                        fontSize: '24px',
+                        fontWeight: 'bold',
+                        color: 'white',
+                        marginBottom: '24px',
+                        fontStyle: 'italic',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                    }}>
+                        ✨ Mood Spectrum
+                    </h2>
+                    
+                    <div style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(2, 1fr)',
+                        gap: '16px'
+                    }}>
+                        {Object.entries(moodSpectrum).map(([key, mood]) => (
+                            <motion.div
+                                key={key}
+                                whileHover={{ scale: 1.02 }}
+                                whileTap={{ scale: 0.98 }}
+                                style={{
+                                    background: 'rgba(0, 0, 0, 0.4)',
+                                    backdropFilter: 'blur(20px)',
+                                    borderRadius: '16px',
+                                    padding: '20px',
+                                    border: `1px solid ${mood.color}40`,
+                                    cursor: 'pointer',
+                                    transition: 'all 0.3s ease'
+                                }}
+                            >
+                                <div style={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    alignItems: 'flex-start'
+                                }}>
+                                    <div style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        marginBottom: '8px'
+                                    }}>
+                                        <span style={{ fontSize: '20px' }}>{mood.emoji}</span>
+                                        <h3 style={{
+                                            color: mood.color,
+                                            fontSize: '18px',
+                                            fontWeight: 'bold',
+                                            margin: 0,
+                                            fontStyle: 'italic'
+                                        }}>
+                                            {mood.name}
+                                        </h3>
+                                    </div>
+                                    <p style={{
+                                        color: 'rgba(255, 255, 255, 0.8)',
+                                        fontSize: '14px',
+                                        margin: 0,
+                                        fontStyle: 'italic',
+                                        textAlign: 'left'
+                                    }}>
+                                        {mood.description}
+                                    </p>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Recent Voice Messages */}
             <div style={{
                 paddingBottom: '100px'
             }}>
                 <h3 style={{
                     color: 'white',
-                    fontSize: '20px',
+                    fontSize: '24px',
                     fontWeight: 'bold',
-                    marginBottom: '16px',
+                    marginBottom: '24px',
                     fontStyle: 'italic'
-                }}>Your Voice Moods</h3>
+                }}>
+                    Recent Voice Messages
+                </h3>
                 
                 <div style={{
                     display: 'flex',
                     flexDirection: 'column',
                     gap: '12px'
                 }}>
-                    <AnimatePresence>
-                        {voiceMessages.map((message, index) => (
+                    {recentMessages.map((message, index) => {
+                        const mood = moodSpectrum[message.mood];
+                        const isUser = index % 2 === 0; // Alternate between user and partner messages
+                        return (
                             <motion.div
                                 key={message.id}
-                                initial={{ opacity: 0, x: -50 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                exit={{ opacity: 0, x: 50 }}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: index * 0.1 }}
                                 style={{
-                                    background: 'rgba(0, 0, 0, 0.3)',
-                                    backdropFilter: 'blur(20px)',
-                                    borderRadius: '16px',
-                                    padding: '16px',
-                                    border: `1px solid ${moodColors[message.mood]}40`,
                                     display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '12px'
+                                    justifyContent: isUser ? 'flex-end' : 'flex-start',
+                                    marginBottom: '8px'
                                 }}
                             >
                                 <div style={{
-                                    width: '40px',
-                                    height: '40px',
-                                    borderRadius: '50%',
-                                    background: `linear-gradient(135deg, ${moodColors[message.mood]}, ${moodColors[message.mood]}aa)`,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontSize: '20px'
-                                }}>
-                                    {moodEmojis[message.mood]}
-                                </div>
-                                
-                                <div style={{
-                                    flex: 1
+                                    maxWidth: '95%',
+                                    minWidth: '80%',
+                                    background: isUser 
+                                        ? 'linear-gradient(135deg, #8b5cf6, #ec4899)'
+                                        : `linear-gradient(135deg, ${mood.color}20, ${mood.color}30, rgba(0, 0, 0, 0.4))`,
+                                    backdropFilter: 'blur(20px)',
+                                    borderRadius: isUser 
+                                        ? '20px 20px 4px 20px'
+                                        : '20px 20px 20px 4px',
+                                    padding: '20px 24px',
+                                    border: isUser 
+                                        ? 'none'
+                                        : `1px solid ${mood.color}60`,
+                                    position: 'relative'
                                 }}>
                                     <div style={{
                                         display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        marginBottom: '4px'
+                                        alignItems: 'flex-start',
+                                        justifyContent: 'space-between',
+                                        marginBottom: '8px'
                                     }}>
+                                        <div style={{
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'flex-start'
+                                        }}>
+                                            <div style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
+                                                marginBottom: '4px'
+                                            }}>
+                                                <span style={{ fontSize: '20px' }}>{mood.emoji}</span>
+                                                <h4 style={{
+                                                    color: isUser ? 'white' : mood.color,
+                                                    fontSize: '20px',
+                                                    fontWeight: 'bold',
+                                                    margin: 0,
+                                                    fontStyle: 'italic'
+                                                }}>
+                                                    {mood.name}
+                                                </h4>
+                                            </div>
+                                            <p style={{
+                                                color: isUser ? 'rgba(255, 255, 255, 0.9)' : 'rgba(255, 255, 255, 0.8)',
+                                                fontSize: '16px',
+                                                margin: 0,
+                                                fontStyle: 'italic',
+                                                lineHeight: '1.4'
+                                            }}>
+                                                {message.analysis}
+                                            </p>
+                                        </div>
                                         <span style={{
-                                            color: 'white',
-                                            fontWeight: '600',
-                                            textTransform: 'capitalize'
-                                        }}>{message.mood} Mood</span>
-                                        <span style={{
-                                            color: '#c4b5fd',
-                                            fontSize: '12px'
-                                        }}>{message.duration}</span>
+                                            color: isUser ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 255, 255, 0.6)',
+                                            fontSize: '12px',
+                                            fontStyle: 'italic',
+                                            flexShrink: 0,
+                                            marginLeft: '16px'
+                                        }}>
+                                            {message.timestamp}
+                                        </span>
                                     </div>
-                                    
-                                    {/* Mini Waveform */}
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'end',
-                                        gap: '1px',
-                                        height: '20px'
-                                    }}>
-                                        {message.waveform.map((height, i) => (
-                                            <div
-                                                key={i}
-                                                style={{
-                                                    width: '2px',
-                                                    height: `${height}%`,
-                                                    background: `${moodColors[message.mood]}aa`,
-                                                    borderRadius: '1px'
-                                                }}
-                                            />
-                                        ))}
-                                    </div>
-                                    
-                                    <span style={{
-                                        color: '#9ca3af',
-                                        fontSize: '12px'
-                                    }}>{message.timestamp}</span>
                                 </div>
-                                
-                                <motion.button
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    style={{
-                                        background: 'rgba(255, 255, 255, 0.1)',
-                                        border: 'none',
-                                        borderRadius: '50%',
-                                        padding: '8px',
-                                        cursor: 'pointer',
-                                        color: moodColors[message.mood]
-                                    }}
-                                >
-                                    <Play style={{ width: '16px', height: '16px' }} />
-                                </motion.button>
                             </motion.div>
-                        ))}
-                    </AnimatePresence>
+                        );
+                    })}
                 </div>
             </div>
         </div>

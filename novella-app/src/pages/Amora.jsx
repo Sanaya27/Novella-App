@@ -222,13 +222,13 @@ export default function Amora() {
     return (
         <div style={{
             height: '100vh',
-            background: 'linear-gradient(to bottom right, #581c87, #7c3aed, #312e81)',
+            background: 'linear-gradient(135deg, #6B46C1 0%, #9333EA 50%, #EC4899 100%)',
             display: 'flex',
             flexDirection: 'column'
         }}>
             {/* Header */}
             <div style={{
-                background: 'rgba(255, 255, 255, 0.1)',
+                background: 'rgba(0, 0, 0, 0.4)',
                 backdropFilter: 'blur(20px)',
                 padding: '16px 20px',
                 display: 'flex',
@@ -355,8 +355,8 @@ export default function Amora() {
             {/* Input */}
             <div style={{
                 padding: '16px 20px',
-                background: 'rgba(255, 255, 255, 0.05)',
-                borderTop: '1px solid rgba(255, 255, 255, 0.1)'
+                background: 'rgba(0, 0, 0, 0.4)',
+                border: '1px solid rgba(255, 255, 255, 0.1)'
             }}>
                 <div style={{
                     display: 'flex',
@@ -365,7 +365,7 @@ export default function Amora() {
                 }}>
                     <div style={{
                         flex: 1,
-                        background: 'rgba(255, 255, 255, 0.1)',
+                        background: 'rgba(0, 0, 0, 0.4)',
                         borderRadius: '24px',
                         border: '1px solid rgba(255, 255, 255, 0.2)',
                         display: 'flex',

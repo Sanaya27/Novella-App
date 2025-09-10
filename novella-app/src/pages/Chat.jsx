@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Heart, Camera, Mic, Lightbulb, Brain, Activity } from 'lucide-react';
+import { Send, Heart, Camera, Mic, Lightbulb, Brain } from 'lucide-react';
 
 const aiSuggestions = [
   "Ask about her art - she's passionate about creativity! 🎨",
@@ -13,23 +13,37 @@ const aiSuggestions = [
 const initialMessages = [
     {
         id: 1,
-        text: "Hey! I love your butterfly collection! 🦋",
+        text: "Hey! I had such a great time syncing hearts with you earlier 😊",
         sender: 'partner',
-        timestamp: '10:30 AM',
+        timestamp: '11:37 AM',
         type: 'text'
     },
     {
         id: 2,
-        text: "Thank you! I see we have a 94% sync rate ✨",
+        text: "Me too! It felt so magical.",
         sender: 'me',
-        timestamp: '10:32 AM',
+        timestamp: '11:38 AM',
         type: 'text'
     },
     {
         id: 3,
-        text: "That's amazing! Want to try the heart sync feature?",
+        text: "🦋",
+        sender: 'system',
+        timestamp: '1m gap',
+        type: 'reaction'
+    },
+    {
+        id: 4,
+        text: "Right? I've never experienced anything like it. My butterfly garden has a new species now!",
         sender: 'partner',
-        timestamp: '10:33 AM',
+        timestamp: '11:39 AM',
+        type: 'text'
+    },
+    {
+        id: 5,
+        text: "Suggest exploring the AR garden together",
+        sender: 'me',
+        timestamp: '11:43 AM',
         type: 'text'
     }
 ];
@@ -39,8 +53,9 @@ export default function Chat() {
     const [newMessage, setNewMessage] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const [showSuggestions, setShowSuggestions] = useState(false);
-    const [nervousnessLevel, setNervousnessLevel] = useState(15); // 0-100
-    const [caringScore, setCaringScore] = useState(87); // 0-100
+    const [nervousnessLevel, setNervousnessLevel] = useState(20); // 0-100
+    const [userCareScore, setUserCareScore] = useState(12); // 0-100
+    const [partnerCareScore, setPartnerCareScore] = useState(1); // 0-100
     const [currentSuggestion, setCurrentSuggestion] = useState(0);
     const messagesEndRef = useRef(null);
 
@@ -80,8 +95,8 @@ export default function Chat() {
             const hasQuestion = text.includes('?');
             const hasCompliment = text.toLowerCase().includes('beautiful') || text.toLowerCase().includes('amazing') || text.toLowerCase().includes('love');
             
-            if (hasQuestion) setCaringScore(prev => Math.min(100, prev + 2));
-            if (hasCompliment) setCaringScore(prev => Math.min(100, prev + 3));
+            if (hasQuestion) setUserCareScore(prev => Math.min(100, prev + 2));
+            if (hasCompliment) setUserCareScore(prev => Math.min(100, prev + 3));
             setNervousnessLevel(prev => Math.max(0, prev - 5));
             
             // Simulate partner typing
@@ -129,7 +144,8 @@ export default function Chat() {
             minHeight: '100vh',
             display: 'flex',
             flexDirection: 'column',
-            paddingTop: '16px'
+            paddingTop: '16px',
+            background: 'linear-gradient(135deg, #6B46C1 0%, #9333EA 50%, #EC4899 100%)'
         }}>
             {/* Header with Metrics */}
             <div style={{
@@ -166,13 +182,13 @@ export default function Chat() {
                             fontWeight: 'bold',
                             margin: 0,
                             fontStyle: 'italic'
-                        }}>Sofia Luna</h2>
+                        }}>Emma Rodriguez</h2>
                         <p style={{
                             color: '#22d3ee',
                             fontSize: '14px',
                             margin: 0,
                             fontStyle: 'italic'
-                        }}>Online now • 94% sync</p>
+                        }}>Emma seems to be choosing her words carefully...</p>
                     </div>
                     <div style={{
                         display: 'flex',
@@ -188,100 +204,63 @@ export default function Chat() {
                     </div>
                 </div>
                 
-                {/* Metrics Row */}
+                {/* Care Scores Header */}
                 <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: '1fr 1fr',
-                    gap: '12px'
+                    textAlign: 'center',
+                    padding: '8px 0',
+                    borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                    marginTop: '12px'
                 }}>
-                    {/* Nervousness Indicator */}
-                    <div style={{
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        borderRadius: '12px',
-                        padding: '8px 12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '8px'
+                    <p style={{
+                        color: 'rgba(255, 255, 255, 0.9)',
+                        fontSize: '14px',
+                        margin: '0 0 8px 0',
+                        fontStyle: 'italic'
                     }}>
-                        <Activity style={{
-                            width: '16px',
-                            height: '16px',
-                            color: nervousnessLevel > 50 ? '#ff6b6b' : '#4ecdc4'
-                        }} />
-                        <div style={{ flex: 1 }}>
-                            <div style={{
-                                fontSize: '12px',
-                                color: 'rgba(255, 255, 255, 0.8)',
-                                marginBottom: '2px'
-                            }}>
-                                Nervousness
-                            </div>
-                            <div style={{
-                                background: 'rgba(255, 255, 255, 0.2)',
-                                borderRadius: '8px',
-                                height: '6px',
-                                overflow: 'hidden'
-                            }}>
-                                <div style={{
-                                    width: `${nervousnessLevel}%`,
-                                    height: '100%',
-                                    background: nervousnessLevel > 50 ? '#ff6b6b' : '#4ecdc4',
-                                    transition: 'all 0.3s ease'
-                                }} />
-                            </div>
-                        </div>
-                        <span style={{
-                            fontSize: '12px',
-                            color: 'white',
-                            fontWeight: 'bold'
-                        }}>
-                            {nervousnessLevel}%
-                        </span>
-                    </div>
-                    
-                    {/* Caring Score */}
+                        Taking a moment to find the right words is a sign of care.
+                    </p>
                     <div style={{
-                        background: 'rgba(255, 255, 255, 0.1)',
-                        borderRadius: '12px',
-                        padding: '8px 12px',
                         display: 'flex',
+                        justifyContent: 'center',
                         alignItems: 'center',
-                        gap: '8px'
+                        gap: '24px'
                     }}>
-                        <Heart style={{
-                            width: '16px',
-                            height: '16px',
-                            color: '#ff6b9d'
-                        }} />
-                        <div style={{ flex: 1 }}>
-                            <div style={{
-                                fontSize: '12px',
-                                color: 'rgba(255, 255, 255, 0.8)',
-                                marginBottom: '2px'
-                            }}>
-                                Caring Score
-                            </div>
-                            <div style={{
-                                background: 'rgba(255, 255, 255, 0.2)',
-                                borderRadius: '8px',
-                                height: '6px',
-                                overflow: 'hidden'
-                            }}>
-                                <div style={{
-                                    width: `${caringScore}%`,
-                                    height: '100%',
-                                    background: 'linear-gradient(90deg, #ff6b9d, #c084fc)',
-                                    transition: 'all 0.3s ease'
-                                }} />
-                            </div>
-                        </div>
-                        <span style={{
-                            fontSize: '12px',
-                            color: 'white',
-                            fontWeight: 'bold'
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px'
                         }}>
-                            {caringScore}%
-                        </span>
+                            <Heart style={{
+                                width: '14px',
+                                height: '14px',
+                                color: '#22d3ee'
+                            }} />
+                            <span style={{
+                                color: '#22d3ee',
+                                fontSize: '14px',
+                                fontWeight: '600'
+                            }}>
+                                Your Care: {userCareScore}
+                            </span>
+                        </div>
+                        <div style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '6px'
+                        }}>
+                            <Heart style={{
+                                width: '14px',
+                                height: '14px',
+                                color: '#22d3ee'
+                            }} />
+                            <span style={{
+                                color: '#22d3ee',
+                                fontSize: '14px',
+                                fontWeight: '600'
+                            }}>
+                                Emma's Care: {partnerCareScore}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -307,33 +286,67 @@ export default function Chat() {
                             }}
                         >
                             <div style={{
-                                maxWidth: '80%',
-                                background: message.sender === 'me' 
-                                    ? 'linear-gradient(135deg, #22d3ee, #8b5cf6)' 
-                                    : 'rgba(0, 0, 0, 0.4)',
-                                backdropFilter: 'blur(20px)',
-                                borderRadius: message.sender === 'me' 
-                                    ? '20px 20px 4px 20px' 
-                                    : '20px 20px 20px 4px',
-                                padding: '12px 16px',
-                                border: message.sender === 'me' 
-                                    ? 'none' 
-                                    : '1px solid rgba(139, 92, 246, 0.2)'
+                                maxWidth: message.type === 'reaction' ? 'auto' : '80%',
+                                background: message.type === 'reaction' 
+                                    ? 'transparent'
+                                    : message.sender === 'me' 
+                                        ? 'linear-gradient(135deg, #8b5cf6, #ec4899)' 
+                                        : 'rgba(0, 0, 0, 0.4)',
+                                backdropFilter: message.type === 'reaction' ? 'none' : 'blur(20px)',
+                                borderRadius: message.type === 'reaction'
+                                    ? '0'
+                                    : message.sender === 'me' 
+                                        ? '20px 20px 4px 20px' 
+                                        : '20px 20px 20px 4px',
+                                padding: message.type === 'reaction' ? '8px 0' : '12px 16px',
+                                border: message.type === 'reaction'
+                                    ? 'none'
+                                    : message.sender === 'me' 
+                                        ? 'none' 
+                                        : '1px solid rgba(139, 92, 246, 0.2)',
+                                textAlign: message.type === 'reaction' ? 'center' : 'left'
                             }}>
-                                <p style={{
-                                    color: 'white',
-                                    margin: '0 0 4px 0',
-                                    fontStyle: 'italic',
-                                    lineHeight: '1.4'
-                                }}>
-                                    {message.text}
-                                </p>
-                                <span style={{
-                                    color: message.sender === 'me' ? 'rgba(255,255,255,0.7)' : '#c4b5fd',
-                                    fontSize: '12px'
-                                }}>
-                                    {message.timestamp}
-                                </span>
+                                {message.type === 'reaction' ? (
+                                    <div style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        gap: '4px'
+                                    }}>
+                                        <div style={{
+                                            fontSize: '32px',
+                                            lineHeight: '1'
+                                        }}>
+                                            {message.text}
+                                        </div>
+                                        <span style={{
+                                            color: 'rgba(255, 255, 255, 0.6)',
+                                            fontSize: '11px',
+                                            background: 'rgba(0, 0, 0, 0.3)',
+                                            padding: '2px 8px',
+                                            borderRadius: '12px'
+                                        }}>
+                                            ⏱ {message.timestamp}
+                                        </span>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <p style={{
+                                            color: 'white',
+                                            margin: '0 0 4px 0',
+                                            fontStyle: 'italic',
+                                            lineHeight: '1.4'
+                                        }}>
+                                            {message.text}
+                                        </p>
+                                        <span style={{
+                                            color: message.sender === 'me' ? 'rgba(255,255,255,0.7)' : '#c4b5fd',
+                                            fontSize: '12px'
+                                        }}>
+                                            {message.timestamp}
+                                        </span>
+                                    </>
+                                )}
                             </div>
                         </motion.div>
                     ))}
@@ -387,11 +400,11 @@ export default function Chat() {
                                 ))}
                             </div>
                             <span style={{
-                                color: '#c4b5fd',
+                                color: '#ff6b6b',
                                 fontSize: '14px',
                                 fontStyle: 'italic'
                             }}>
-                                Sofia is typing...
+                                🦋 fluttering a reply...
                             </span>
                         </div>
                     </motion.div>
@@ -411,7 +424,7 @@ export default function Chat() {
                             bottom: '160px', // Account for input area (80px) + bottom nav (80px)
                             left: '16px',
                             right: '16px',
-                            background: 'rgba(0, 0, 0, 0.5)',
+                            background: 'rgba(0, 0, 0, 0.4)',
                             backdropFilter: 'blur(20px)',
                             borderRadius: '16px',
                             padding: '16px',
@@ -528,13 +541,68 @@ export default function Chat() {
                 )}
             </AnimatePresence>
 
+            {/* Nervousness Level Indicator */}
+            <div style={{
+                position: 'fixed',
+                bottom: '160px', // Above input area
+                left: '16px',
+                right: '16px',
+                background: 'rgba(0, 0, 0, 0.6)',
+                backdropFilter: 'blur(20px)',
+                borderRadius: '12px',
+                padding: '12px 16px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                zIndex: 999
+            }}>
+                <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    flex: 1
+                }}>
+                    <span style={{
+                        color: '#4ecdc4',
+                        fontSize: '14px',
+                        fontWeight: '600'
+                    }}>
+                        Nervousness Level: {nervousnessLevel}%
+                    </span>
+                    <div style={{
+                        flex: 1,
+                        background: 'rgba(255, 255, 255, 0.2)',
+                        borderRadius: '8px',
+                        height: '8px',
+                        overflow: 'hidden'
+                    }}>
+                        <div style={{
+                            width: `${nervousnessLevel}%`,
+                            height: '100%',
+                            background: '#4ecdc4',
+                            transition: 'all 0.3s ease'
+                        }} />
+                    </div>
+                </div>
+                <div style={{
+                    color: 'rgba(255, 255, 255, 0.7)',
+                    fontSize: '13px',
+                    fontStyle: 'italic',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px'
+                }}>
+                    Taking your time... 😊
+                </div>
+            </div>
+
             {/* Input Area */}
             <div style={{
                 position: 'fixed',
                 bottom: '80px', // Account for bottom navigation (80px height)
                 left: 0,
                 right: 0,
-                background: 'rgba(0, 0, 0, 0.5)',
+                background: 'rgba(0, 0, 0, 0.4)',
                 backdropFilter: 'blur(20px)',
                 borderTop: '1px solid rgba(139, 92, 246, 0.2)',
                 padding: '16px',
@@ -582,7 +650,7 @@ export default function Chat() {
                                     sendMessage();
                                 }
                             }}
-                            placeholder="Type a thoughtful message..."
+                            placeholder="Flutter a message..."
                             style={{
                                 width: '100%',
                                 background: 'rgba(255, 255, 255, 0.1)',

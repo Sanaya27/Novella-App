@@ -1,25 +1,25 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, ArrowLeft, MessageSquare, Send, Clock } from 'lucide-react';
+import { ArrowLeft, Send } from 'lucide-react';
 import { useUser } from '../context/UserContext';
 import ButterflyAnimation from '../components/dating/ButterflyAnimation';
 
-// Sample profiles for demo
+// Sample profiles for demo - matching HomeNew.jsx profiles
 const sampleProfiles = {
-  1: { name: 'Priya', photo: 'https://images.unsplash.com/photo-1494790108755-2616b332c813?w=400' },
-  2: { name: 'Aman', photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400' },
-  3: { name: 'Riya', photo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400' },
-  4: { name: 'Arjun', photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400' },
-  5: { name: 'Kavya', photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400' },
-  6: { name: 'Rohit', photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400' }
+  1: { name: 'Lily Chen', photo: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400' },
+  2: { name: 'Sofia Luna', photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400' },
+  3: { name: 'Zara Moon', photo: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400' },
+  4: { name: 'Aria Chen', photo: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400' },
+  5: { name: 'Emma Rodriguez', photo: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400' },
+  6: { name: 'Madison Cooper', photo: 'https://images.unsplash.com/photo-1488716820095-cbe80883c496?w=400' }
 };
 
 // Sample sync session history
 const sampleSyncHistory = [
-  { date: '09 Sep 2025, 18:42', partner: 'Priya', syncPercentage: 89 },
-  { date: '08 Sep 2025, 21:15', partner: 'Riya', syncPercentage: 82 },
-  { date: '07 Sep 2025, 19:30', partner: 'Kavya', syncPercentage: 91 }
+  { date: '09 Sep 2025, 18:42', partner: 'Lily Chen', syncPercentage: 89 },
+  { date: '08 Sep 2025, 21:15', partner: 'Sofia Luna', syncPercentage: 82 },
+  { date: '07 Sep 2025, 19:30', partner: 'Zara Moon', syncPercentage: 91 }
 ];
 
 export default function Sync() {
@@ -47,7 +47,7 @@ export default function Sync() {
     const noise = (Math.random() - 0.5) * 3;
     
     const newBpm = currentBpm + (target - currentBpm) * 0.1 + oscillation + noise;
-    return Math.max(65, Math.min(105, newBpm));
+    return Math.round(Math.max(65, Math.min(105, newBpm))); // Round to integer
   };
 
   // Sync percentage calculation
@@ -56,7 +56,7 @@ export default function Sync() {
     const baseSync = 65 + similarity * 20;
     const jitter = (Math.random() - 0.5) * 4;
     const result = baseSync + flutterBoost + jitter;
-    return Math.max(65, Math.min(95, result));
+    return Math.round(Math.max(65, Math.min(95, result))); // Round to integer
   };
 
   // Update BPM and sync percentage
@@ -148,7 +148,9 @@ export default function Sync() {
       width: '100%',
       padding: '20px',
       maxWidth: '1200px',
-      margin: '0 auto'
+      margin: '0 auto',
+      background: 'linear-gradient(135deg, #6B46C1 0%, #9333EA 50%, #EC4899 100%)',
+      minHeight: '100vh'
     }}>
       {/* Enhanced Butterfly animations (same as home page) */}
       <AnimatePresence>
@@ -177,9 +179,7 @@ export default function Sync() {
               style={{
                 position: 'fixed',
                 zIndex: 9999, // Higher z-index to be on top
-                pointerEvents: 'none',
-                backgroundColor: 'rgba(255, 0, 255, 0.2)', // Temporary debug background
-                borderRadius: '50%'
+                pointerEvents: 'none'
               }}
             >
               {/* Large visible emoji butterfly */}
@@ -212,37 +212,42 @@ export default function Sync() {
       </AnimatePresence>
       {/* Header */}
       <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '16px',
         marginBottom: '30px'
       }}>
-        <button
-          onClick={() => navigate('/home')}
-          style={{
-            background: 'rgba(255, 255, 255, 0.1)',
-            border: 'none',
-            borderRadius: '12px',
-            padding: '12px',
-            color: 'white',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minWidth: '48px',
-            minHeight: '48px'
-          }}
-          aria-label="Go back"
-        >
-          <ArrowLeft size={20} />
-        </button>
+        {/* Back button */}
+        <div style={{
+          marginBottom: '20px'
+        }}>
+          <button
+            onClick={() => navigate('/home')}
+            style={{
+              background: 'rgba(0, 0, 0, 0.4)',
+              border: 'none',
+              borderRadius: '12px',
+              padding: '12px',
+              color: 'white',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              minWidth: '48px',
+              minHeight: '48px'
+            }}
+            aria-label="Go back"
+          >
+            <ArrowLeft size={20} />
+          </button>
+        </div>
         
-        <div>
+        {/* Centered title and tagline */}
+        <div style={{
+          textAlign: 'center'
+        }}>
           <h1 style={{
             fontSize: '32px',
             fontWeight: '700',
             color: 'white',
-            margin: '0 0 4px 0'
+            margin: '0 0 8px 0'
           }}>
             Heart Sync
           </h1>
@@ -256,401 +261,570 @@ export default function Sync() {
         </div>
       </div>
 
-      {/* Partner info */}
+      {/* Connection Status Bar */}
       <div style={{
-        background: 'rgba(255, 255, 255, 0.1)',
+        background: 'rgba(0, 0, 0, 0.3)',
         backdropFilter: 'blur(20px)',
         borderRadius: '16px',
         padding: '20px',
         marginBottom: '30px',
         display: 'flex',
         alignItems: 'center',
-        gap: '16px'
+        justifyContent: 'space-between',
+        border: '1px solid rgba(255, 255, 255, 0.1)'
       }}>
-        <img
-          src={currentPartner.photo}
-          alt={currentPartner.name}
-          style={{
-            width: '50px',
-            height: '50px',
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px'
+        }}>
+          <div style={{
+            width: '12px',
+            height: '12px',
             borderRadius: '50%',
-            objectFit: 'cover'
-          }}
-        />
-        <div>
-          <h3 style={{
-            fontSize: '18px',
-            fontWeight: '600',
+            background: '#00ff88'
+          }} />
+          <span style={{
             color: 'white',
-            margin: '0 0 4px 0'
+            fontSize: '16px',
+            fontWeight: '600'
           }}>
-            Syncing with {currentPartner.name}
-          </h3>
-          <p style={{
-            fontSize: '14px',
-            color: 'rgba(255, 255, 255, 0.7)',
-            margin: 0
-          }}>
-            Synced for {formatDuration(syncDuration)}
-          </p>
+            Connected to {currentPartner.name}
+          </span>
+        </div>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          color: '#00ff88',
+          fontSize: '16px',
+          fontWeight: '600'
+        }}>
+          ⚡ {Math.floor(syncPercentage)}% sync
         </div>
       </div>
 
-      {/* Hearts and BPM Display */}
+      {/* BPM Cards */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
         gap: '20px',
         marginBottom: '30px'
       }}>
-        {/* My Heart */}
+        {/* My Heart Card */}
         <div style={{
-          background: 'rgba(255, 255, 255, 0.1)',
+          background: 'rgba(0, 0, 0, 0.4)',
           backdropFilter: 'blur(20px)',
           borderRadius: '20px',
           padding: '30px',
-          textAlign: 'center',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
+          border: '1px solid rgba(255, 255, 255, 0.1)'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            marginBottom: '20px'
+          }}>
+            <span style={{ fontSize: '24px' }}>💙</span>
+            <span style={{
+              color: 'white',
+              fontSize: '18px',
+              fontWeight: '600'
+            }}>
+              You
+            </span>
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: '#00ff88'
+            }} />
+          </div>
+          
+          <div style={{
+            fontSize: '48px',
+            fontWeight: '700',
+            color: '#4ecdc4',
+            marginBottom: '16px'
+          }}>
+            {Math.floor(myBpm)}
+            <span style={{
+              fontSize: '16px',
+              color: 'rgba(255, 255, 255, 0.7)',
+              marginLeft: '8px'
+            }}>
+              BPM
+            </span>
+          </div>
+          
+          {/* Mini Bar Chart */}
+          <div style={{
+            height: '40px',
+            display: 'flex',
+            alignItems: 'end',
+            gap: '2px',
+            marginBottom: '8px'
+          }}>
+            <span style={{
+              fontSize: '12px',
+              color: 'rgba(255, 255, 255, 0.5)',
+              marginRight: '8px'
+            }}>
+              •••
+            </span>
+            {bpmHistory.slice(-15).map((entry, index) => {
+              const height = Math.max(4, (entry.myBpm - 60) / 40 * 100);
+              return (
+                <motion.div
+                  key={`my-mini-${index}`}
+                  style={{
+                    width: '4px',
+                    background: '#4ecdc4',
+                    borderRadius: '2px',
+                    minHeight: '4px'
+                  }}
+                  animate={{ height: `${height}%` }}
+                  transition={{ duration: 0.3 }}
+                />
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Partner Heart Card */}
+        <div style={{
+          background: 'rgba(0, 0, 0, 0.4)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '20px',
+          padding: '30px',
+          border: '1px solid rgba(255, 255, 255, 0.1)'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+            marginBottom: '20px'
+          }}>
+            <span style={{ fontSize: '24px' }}>🧡</span>
+            <span style={{
+              color: 'white',
+              fontSize: '18px',
+              fontWeight: '600'
+            }}>
+              {currentPartner.name}
+            </span>
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: '#00ff88'
+            }} />
+          </div>
+          
+          <div style={{
+            fontSize: '48px',
+            fontWeight: '700',
+            color: '#ff6b9d',
+            marginBottom: '16px'
+          }}>
+            {Math.floor(partnerBpm)}
+            <span style={{
+              fontSize: '16px',
+              color: 'rgba(255, 255, 255, 0.7)',
+              marginLeft: '8px'
+            }}>
+              BPM
+            </span>
+          </div>
+          
+          {/* Mini Bar Chart */}
+          <div style={{
+            height: '40px',
+            display: 'flex',
+            alignItems: 'end',
+            gap: '2px',
+            marginBottom: '8px'
+          }}>
+            <span style={{
+              fontSize: '12px',
+              color: 'rgba(255, 255, 255, 0.5)',
+              marginRight: '8px'
+            }}>
+              •••
+            </span>
+            {bpmHistory.slice(-15).map((entry, index) => {
+              const height = Math.max(4, (entry.partnerBpm - 60) / 40 * 100);
+              return (
+                <motion.div
+                  key={`partner-mini-${index}`}
+                  style={{
+                    width: '4px',
+                    background: '#ff6b9d',
+                    borderRadius: '2px',
+                    minHeight: '4px'
+                  }}
+                  animate={{ height: `${height}%` }}
+                  transition={{ duration: 0.3 }}
+                />
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Heart Visualization */}
+      <div style={{
+        background: 'rgba(0, 0, 0, 0.4)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '20px',
+        padding: '40px',
+        marginBottom: '30px',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        height: '250px'
+      }}>
+        {/* Your Heart */}
+        <div style={{
+          position: 'absolute',
+          left: '15%',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          textAlign: 'center'
         }}>
           <motion.div
-            animate={{ 
-              scale: [1, 1.2, 1] 
+            animate={{
+              scale: [1, 1.1, 1],
+              opacity: [0.8, 1, 0.8]
             }}
-            transition={{ 
+            transition={{
               duration: 60 / myBpm,
               repeat: Infinity,
               ease: "easeInOut"
             }}
             style={{
-              fontSize: '48px',
-              marginBottom: '16px'
+              width: '150px',
+              height: '150px',
+              marginBottom: '10px',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            {/* Beautiful Heart Shape */}
+            <div style={{
+              fontSize: '120px',
+              color: '#4ecdc4',
+              textAlign: 'center',
+              filter: 'drop-shadow(0 0 30px rgba(78, 205, 196, 0.4))'
+            }}>
+              💙
+            </div>
+          </motion.div>
+          <div style={{
+            color: '#4ecdc4',
+            fontSize: '16px',
+            fontWeight: '600',
+            fontStyle: 'italic'
+          }}>
+            Your Heart
+          </div>
+        </div>
+
+        {/* Center Connection with Send Flutter Button */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: '20px'
+        }}>
+          {/* Connection Heart */}
+          <motion.div
+            animate={{
+              scale: [1, 1.2, 1],
+              rotate: [0, 5, -5, 0]
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            style={{
+              width: '70px',
+              height: '70px',
+              borderRadius: '50%',
+              background: 'linear-gradient(135deg, #ff6b9d, #ec4899)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '28px',
+              border: '3px solid rgba(255, 255, 255, 0.3)',
+              boxShadow: '0 0 20px rgba(255, 107, 157, 0.5)'
             }}
           >
             ❤️
           </motion.div>
-          <div style={{
-            fontSize: '32px',
-            fontWeight: '700',
-            color: '#ff6b9d',
-            marginBottom: '8px'
-          }}>
-            {Math.round(myBpm)} BPM
-          </div>
-          <div style={{
-            fontSize: '14px',
-            color: 'rgba(255, 255, 255, 0.8)'
-          }}>
-            You ({user?.fullName || 'You'})
-          </div>
+          
+          {/* Send Flutter Button */}
+          <motion.button
+            onClick={handleSendFlutter}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              background: 'linear-gradient(45deg, #ff6b9d, #22d3ee)',
+              border: 'none',
+              borderRadius: '12px',
+              padding: '12px 24px',
+              color: 'white',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              boxShadow: '0 4px 15px rgba(255, 107, 157, 0.4)',
+              minHeight: '40px'
+            }}
+          >
+            <Send size={16} />
+            Send Flutter
+          </motion.button>
         </div>
 
-        {/* Partner Heart */}
+        {/* Partner's Heart */}
         <div style={{
-          background: 'rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(20px)',
-          borderRadius: '20px',
-          padding: '30px',
-          textAlign: 'center',
-          border: '1px solid rgba(255, 255, 255, 0.2)'
+          position: 'absolute',
+          right: '15%',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          textAlign: 'center'
         }}>
           <motion.div
-            animate={{ 
-              scale: [1, 1.2, 1] 
+            animate={{
+              scale: [1, 1.1, 1],
+              opacity: [0.8, 1, 0.8]
             }}
-            transition={{ 
+            transition={{
               duration: 60 / partnerBpm,
               repeat: Infinity,
               ease: "easeInOut"
             }}
             style={{
-              fontSize: '48px',
-              marginBottom: '16px'
+              width: '150px',
+              height: '150px',
+              marginBottom: '10px',
+              position: 'relative',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
           >
-            💖
+            {/* Beautiful Heart Shape */}
+            <div style={{
+              fontSize: '120px',
+              color: '#ff6b9d',
+              textAlign: 'center',
+              filter: 'drop-shadow(0 0 30px rgba(255, 107, 157, 0.4))'
+            }}>
+              💖
+            </div>
           </motion.div>
           <div style={{
-            fontSize: '32px',
-            fontWeight: '700',
-            color: '#22d3ee',
-            marginBottom: '8px'
-          }}>
-            {Math.round(partnerBpm)} BPM
-          </div>
-          <div style={{
-            fontSize: '14px',
-            color: 'rgba(255, 255, 255, 0.8)'
-          }}>
-            {currentPartner.name}
-          </div>
-        </div>
-      </div>
-
-      {/* Sync Percentage */}
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(20px)',
-        borderRadius: '20px',
-        padding: '30px',
-        marginBottom: '30px',
-        textAlign: 'center',
-        border: '1px solid rgba(255, 255, 255, 0.2)'
-      }}>
-        <div style={{
-          fontSize: '48px',
-          fontWeight: '700',
-          background: 'linear-gradient(45deg, #ff6b9d, #22d3ee)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          marginBottom: '16px'
-        }}>
-          {Math.round(syncPercentage)}%
-        </div>
-        <div style={{
-          fontSize: '18px',
-          color: 'white',
-          marginBottom: '20px'
-        }}>
-          Sync Level
-        </div>
-        
-        {/* Sync Progress Bar */}
-        <div style={{
-          width: '100%',
-          height: '12px',
-          background: 'rgba(255, 255, 255, 0.2)',
-          borderRadius: '6px',
-          overflow: 'hidden',
-          marginBottom: '20px'
-        }}>
-          <motion.div
-            style={{
-              height: '100%',
-              background: 'linear-gradient(45deg, #ff6b9d, #22d3ee)',
-              borderRadius: '6px'
-            }}
-            animate={{ width: `${syncPercentage}%` }}
-            transition={{ duration: 0.5 }}
-          />
-        </div>
-
-        {/* Send Flutter Button */}
-        <motion.button
-          onClick={handleSendFlutter}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          style={{
-            background: 'linear-gradient(45deg, #ff6b9d, #22d3ee)',
-            border: 'none',
-            borderRadius: '12px',
-            padding: '16px 32px',
-            color: 'white',
-            fontSize: '18px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            margin: '0 auto',
-            boxShadow: '0 4px 15px rgba(255, 107, 157, 0.4)',
-            minHeight: '52px'
-          }}
-        >
-          <Send size={20} />
-          Send Flutter
-        </motion.button>
-      </div>
-
-      {/* BPM Chart */}
-      <div style={{
-        background: 'rgba(255, 255, 255, 0.1)',
-        backdropFilter: 'blur(20px)',
-        borderRadius: '20px',
-        padding: '30px',
-        marginBottom: '30px',
-        border: '1px solid rgba(255, 255, 255, 0.2)'
-      }}>
-        <h3 style={{
-          fontSize: '20px',
-          fontWeight: '600',
-          color: 'white',
-          marginBottom: '20px'
-        }}>
-          Live Heart Rate Sync
-        </h3>
-        
-        {/* Simple BPM bars visualization */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'end',
-          gap: '4px',
-          height: '100px',
-          width: '100%',
-          overflow: 'hidden'
-        }}>
-          {bpmHistory.slice(-20).map((data, index) => (
-            <div key={index} style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: '2px',
-              flex: 1
-            }}>
-              <motion.div
-                style={{
-                  width: '100%',
-                  background: 'linear-gradient(to top, #ff6b9d, #ff8fab)',
-                  borderRadius: '2px'
-                }}
-                animate={{
-                  height: `${(data.myBpm - 60) * 2}px`
-                }}
-                transition={{ duration: 0.3 }}
-              />
-              <motion.div
-                style={{
-                  width: '100%',
-                  background: 'linear-gradient(to top, #22d3ee, #60a5fa)',
-                  borderRadius: '2px'
-                }}
-                animate={{
-                  height: `${(data.partnerBpm - 60) * 2}px`
-                }}
-                transition={{ duration: 0.3 }}
-              />
-            </div>
-          ))}
-        </div>
-        
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '20px',
-          marginTop: '16px'
-        }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            <div style={{
-              width: '12px',
-              height: '12px',
-              background: '#ff6b9d',
-              borderRadius: '2px'
-            }} />
-            <span style={{
-              fontSize: '12px',
-              color: 'rgba(255, 255, 255, 0.8)'
-            }}>
-              Your BPM
-            </span>
-          </div>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            <div style={{
-              width: '12px',
-              height: '12px',
-              background: '#22d3ee',
-              borderRadius: '2px'
-            }} />
-            <span style={{
-              fontSize: '12px',
-              color: 'rgba(255, 255, 255, 0.8)'
-            }}>
-              {currentPartner.name}'s BPM
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div style={{
-        display: 'flex',
-        gap: '16px',
-        justifyContent: 'center',
-        marginBottom: '30px'
-      }}>
-        <motion.button
-          onClick={() => navigate(`/chat/${matchId || 1}`)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          style={{
-            background: 'rgba(255, 255, 255, 0.1)',
-            border: '1px solid rgba(255, 255, 255, 0.3)',
-            borderRadius: '12px',
-            padding: '16px 24px',
-            color: 'white',
+            color: '#ff6b9d',
             fontSize: '16px',
             fontWeight: '600',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            minHeight: '52px'
-          }}
-        >
-          <MessageSquare size={20} />
-          Open Chat
-        </motion.button>
+            fontStyle: 'italic'
+          }}>
+            {currentPartner.name}'s Heart
+          </div>
+        </div>
       </div>
 
-      {/* Sync Session Summary */}
+      {/* Today's Sync Sessions */}
       <div style={{
-        background: 'rgba(255, 255, 255, 0.1)',
+        background: 'rgba(0, 0, 0, 0.4)',
         backdropFilter: 'blur(20px)',
         borderRadius: '20px',
         padding: '30px',
-        border: '1px solid rgba(255, 255, 255, 0.2)'
+        marginBottom: '30px',
+        border: '1px solid rgba(255, 255, 255, 0.1)'
       }}>
         <h3 style={{
-          fontSize: '20px',
+          fontSize: '24px',
           fontWeight: '600',
           color: 'white',
           marginBottom: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
+          fontStyle: 'italic'
         }}>
-          <Clock size={20} />
-          Sync Session Summary
+          Today's Sync Sessions
         </h3>
         
         <div style={{
           display: 'flex',
           flexDirection: 'column',
-          gap: '12px'
+          gap: '16px'
         }}>
-          {sampleSyncHistory.map((session, index) => (
-            <div key={index} style={{
-              background: 'rgba(255, 255, 255, 0.05)',
-              borderRadius: '12px',
-              padding: '16px',
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '16px 0',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+          }}>
+            <div style={{
               display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center'
+              alignItems: 'center',
+              gap: '12px'
             }}>
-              <div>
-                <div style={{
-                  fontSize: '14px',
-                  color: 'white',
-                  fontWeight: '500'
-                }}>
-                  {session.date} — Synced with {session.partner}
-                </div>
+              <div style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#00ff88'
+              }} />
+              <span style={{
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: '600'
+              }}>
+                2:14 PM
+              </span>
+              <span style={{
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: '14px',
+                fontStyle: 'italic'
+              }}>
+                Excited
+              </span>
+            </div>
+            <div style={{
+              textAlign: 'right'
+            }}>
+              <div style={{
+                color: '#4ecdc4',
+                fontSize: '16px',
+                fontWeight: '600'
+              }}>
+                94% sync
               </div>
               <div style={{
-                fontSize: '16px',
-                fontWeight: '600',
-                color: '#22d3ee'
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: '12px'
               }}>
-                {session.syncPercentage}%
+                3m 42s
               </div>
             </div>
-          ))}
+          </div>
+          
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '16px 0',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <div style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#ffeb3b'
+              }} />
+              <span style={{
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: '600'
+              }}>
+                11:28 AM
+              </span>
+              <span style={{
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: '14px',
+                fontStyle: 'italic'
+              }}>
+                Calm
+              </span>
+            </div>
+            <div style={{
+              textAlign: 'right'
+            }}>
+              <div style={{
+                color: '#4ecdc4',
+                fontSize: '16px',
+                fontWeight: '600'
+              }}>
+                87% sync
+              </div>
+              <div style={{
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: '12px'
+              }}>
+                2m 15s
+              </div>
+            </div>
+          </div>
+          
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            padding: '16px 0'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <div style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: '#00ff88'
+              }} />
+              <span style={{
+                color: 'white',
+                fontSize: '16px',
+                fontWeight: '600'
+              }}>
+                9:45 AM
+              </span>
+              <span style={{
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: '14px',
+                fontStyle: 'italic'
+              }}>
+                Romantic
+              </span>
+            </div>
+            <div style={{
+              textAlign: 'right'
+            }}>
+              <div style={{
+                color: '#4ecdc4',
+                fontSize: '16px',
+                fontWeight: '600'
+              }}>
+                91% sync
+              </div>
+              <div style={{
+                color: 'rgba(255, 255, 255, 0.6)',
+                fontSize: '12px'
+              }}>
+                5m 01s
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
