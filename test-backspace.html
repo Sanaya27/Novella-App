@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backspace Nervousness Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #6B46C1 0%, #9333EA 50%, #EC4899 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(20px);
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+        }
+        .nervousness-bar {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            height: 20px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        .nervousness-fill {
+            height: 100%;
+            background: #4ecdc4;
+            transition: width 0.3s ease;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        .info {
+            font-size: 14px;
+            color: #c4b5fd;
+            margin-top: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Backspace Nervousness Test</h1>
+        <p>Type in the input field and press backspace to see the nervousness level increase:</p>
+        
+        <input type="text" id="messageInput" placeholder="Type something and press backspace...">
+        
+        <div class="stats">
+            <span>Nervousness Level:</span>
+            <span id="nervousnessValue">20%</span>
+        </div>
+        
+        <div class="nervousness-bar">
+            <div class="nervousness-fill" id="nervousnessBar" style="width: 20%"></div>
+        </div>
+        
+        <div class="stats">
+            <span>Backspace Count:</span>
+            <span id="backspaceCount">0</span>
+        </div>
+        
+        <div class="info">
+            <p>Note: Nervousness level will never exceed 85% and increases by 1-2% per backspace.</p>
+        </div>
+    </div>
+
+    <script>
+        let nervousnessLevel = 20;
+        let backspaceCount = 0;
+        let previousLength = 0;
+        
+        const messageInput = document.getElementById('messageInput');
+        const nervousnessValue = document.getElementById('nervousnessValue');
+        const nervousnessBar = document.getElementById('nervousnessBar');
+        const backspaceCountElement = document.getElementById('backspaceCount');
+        
+        // Update display elements
+        function updateDisplay() {
+            nervousnessValue.textContent = `${nervousnessLevel}%`;
+            nervousnessBar.style.width = `${nervousnessLevel}%`;
+            backspaceCountElement.textContent = backspaceCount;
+        }
+        
+        // Handle backspace detection and nervousness increase
+        function handleBackspaceDetection(currentValue) {
+            // Check if text was actually deleted (current length < previous length)
+            if (currentValue.length < previousLength) {
+                backspaceCount++;
+                // Increase nervousness by 1-2% for each backspace deletion, capped at 85%
+                const increment = Math.random() < 0.7 ? 1 : 2; // 70% chance of 1%, 30% chance of 2%
+                nervousnessLevel = Math.min(85, nervousnessLevel + increment);
+                updateDisplay();
+            }
+            previousLength = currentValue.length;
+        }
+        
+        // Event listeners
+        messageInput.addEventListener('input', function(e) {
+            handleBackspaceDetection(e.target.value);
+        });
+        
+        messageInput.addEventListener('keydown', function(e) {
+            // We can also detect the backspace key directly
+            if (e.key === 'Backspace') {
+                // The actual deletion will be detected in the input event
+            }
+        });
+        
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>

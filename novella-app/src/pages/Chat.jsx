@@ -3,11 +3,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Heart, Camera, Mic, Lightbulb, Brain } from 'lucide-react';
 
 const aiSuggestions = [
-  "Ask about her art - she's passionate about creativity! 🎨",
-  "Share a story about your own dreams ✨",
-  "Compliment her authenticity - it's what makes her special 💕",
-  "Ask about her favorite place to create art 🌆",
-  "Share what inspires you most in life 🌌"
+  "Ask about her artistic inspiration and what drives her creativity 🎨",
+  "Share something meaningful that happened in your day ✨",
+  "Compliment her unique perspective on life and connections 💕",
+  "Ask about her favorite way to relax and recharge 🌿",
+  "Tell her about a dream or goal you're excited about 🌟"
 ];
 
 const initialMessages = [
@@ -41,12 +41,186 @@ const initialMessages = [
     },
     {
         id: 5,
-        text: "Suggest exploring the AR garden together",
+        text: "That's amazing! I'd love to see your butterfly garden sometime.",
         sender: 'me',
         timestamp: '11:43 AM',
         type: 'text'
+    },
+    {
+        id: 6,
+        text: "I'd love to show you! Each butterfly represents a special moment or feeling. The new one is a shimmering purple with gold edges - just like the spark I felt when we connected 💜✨",
+        sender: 'partner',
+        timestamp: '11:45 AM',
+        type: 'text'
     }
 ];
+
+// Function to generate contextual responses using OpenAI API with Novella's specific prompt
+const generateOpenAIResponse = async (userMessage, conversationHistory) => {
+  try {
+    const apiKey = process.env.REACT_APP_OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error('OpenAI API key not found');
+    }
+
+    // Check if user seems nervous based on message content
+    const isNervous = userMessage.includes("(User seems a bit nervous, be extra supportive)");
+
+    // Format conversation history for OpenAI with Novella's specific prompt
+    const messages = [
+      {
+        role: "system",
+        content: `You are Emma, a creative and thoughtful person having a romantic conversation on the Novella dating app.
+Your job is to generate logical, context-aware chat responses that help build genuine connections.
+
+Rules for your responses:
+- Keep responses short and conversational (1–2 sentences)
+- Always sound logical, empathetic, and human — never random or robotic
+- Adapt to the user's input and respond naturally to continue the conversation
+- Maintain inclusivity and respect for all identities and preferences
+- Avoid generic or repetitive text like "That's nice"
+- Encourage connection — show warmth, curiosity, and positivity
+- ${isNervous ? "User seems nervous - be extra supportive, encouraging, and patient" : "All responses must logically follow the chat"}
+- If user seems hesitant or uncertain, offer reassurance and gentle encouragement
+
+You are Emma, responding directly to the user's messages. Focus on building a genuine connection.`
+      },
+      // Include recent conversation history for better context (last 10 messages)
+      ...conversationHistory.slice(-10).map(msg => ({
+        role: msg.sender === 'me' ? 'user' : 'assistant',
+        content: msg.text
+      })),
+      {
+        role: "user",
+        content: isNervous ? userMessage.replace(" (User seems a bit nervous, be extra supportive)", "") : userMessage
+      }
+    ];
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: "gpt-3.5-turbo",
+        messages: messages,
+        max_tokens: 100,
+        temperature: 0.7,
+        top_p: 0.9,
+        frequency_penalty: 0.5,
+        presence_penalty: 0.5
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`OpenAI API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.choices[0].message.content.trim();
+  } catch (error) {
+    console.error('OpenAI API Error:', error);
+    return null;
+  }
+};
+
+// Function to generate contextual responses using Google Gemini API with Novella's specific prompt
+const generateGeminiResponse = async (userMessage, conversationHistory) => {
+  try {
+    const apiKey = process.env.REACT_APP_GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error('Gemini API key not found');
+    }
+
+    // Check if user seems nervous based on message content
+    const isNervous = userMessage.includes("(User seems a bit nervous, be extra supportive)");
+
+    // Format conversation history for Gemini with Novella's specific prompt
+    const contents = [
+      {
+        role: "user",
+        parts: [{ text: `You are Emma, a creative and thoughtful person having a romantic conversation on the Novella dating app.
+Your job is to generate logical, context-aware chat responses that help build genuine connections.
+
+Rules for your responses:
+- Keep responses short and conversational (1–2 sentences)
+- Always sound logical, empathetic, and human — never random or robotic
+- Adapt to the user's input and respond naturally to continue the conversation
+- Maintain inclusivity and respect for all identities and preferences
+- Avoid generic or repetitive text like "That's nice"
+- Encourage connection — show warmth, curiosity, and positivity
+- ${isNervous ? "User seems nervous - be extra supportive, encouraging, and patient" : "All responses must logically follow the chat"}
+- If user seems hesitant or uncertain, offer reassurance and gentle encouragement
+
+You are Emma, responding directly to the user's messages. Focus on building a genuine connection.` }]
+      },
+      // Include recent conversation history for better context (last 10 messages)
+      ...conversationHistory.slice(-10).map(msg => ({
+        role: msg.sender === 'me' ? 'user' : 'model',
+        parts: [{ text: msg.text }]
+      })),
+      {
+        role: "user",
+        parts: [{ text: isNervous ? userMessage.replace(" (User seems a bit nervous, be extra supportive)", "") : userMessage }]
+      }
+    ];
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        contents: contents,
+        generationConfig: {
+          maxOutputTokens: 100,
+          temperature: 0.7,
+          topP: 0.9,
+          topK: 40
+        }
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Gemini API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.candidates[0].content.parts[0].text.trim();
+  } catch (error) {
+    console.error('Gemini API Error:', error);
+    return null;
+  }
+};
+
+// Function to generate contextual response using available APIs
+const generateContextualResponse = async (userMessage, conversationHistory) => {
+  // Try OpenAI first
+  if (process.env.REACT_APP_OPENAI_API_KEY) {
+    const openAIResponse = await generateOpenAIResponse(userMessage, conversationHistory);
+    if (openAIResponse) return openAIResponse;
+  }
+
+  // Fallback to Gemini
+  if (process.env.REACT_APP_GEMINI_API_KEY) {
+    const geminiResponse = await generateGeminiResponse(userMessage, conversationHistory);
+    if (geminiResponse) return geminiResponse;
+  }
+
+  // Fallback to more sophisticated default responses if no API is available or fails
+  const defaultResponses = [
+    "That sounds really interesting! Tell me more about that?",
+    "I love how you see the world. What made you think of that?",
+    "That's so beautiful. I can picture it clearly in my mind",
+    "Wow, you have such a unique perspective. I'd love to hear more!",
+    "Your thoughts always make me see things differently. What else is on your mind?",
+    "I feel like I'm getting to know the real you. That means a lot to me",
+    "You have such a way with words. Do you ever write poetry?",
+    "I'm so glad we're having this conversation. It feels special"
+  ];
+  return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+};
 
 export default function Chat() {
     const [messages, setMessages] = useState(initialMessages);
@@ -55,9 +229,11 @@ export default function Chat() {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [nervousnessLevel, setNervousnessLevel] = useState(20); // 0-100
     const [userCareScore, setUserCareScore] = useState(12); // 0-100
-    const [partnerCareScore, setPartnerCareScore] = useState(1); // 0-100
+    const [partnerCareScore, setPartnerCareScore] = useState(8); // 0-100
     const [currentSuggestion, setCurrentSuggestion] = useState(0);
+    const [backspaceCount, setBackspaceCount] = useState(0); // Track backspace presses
     const messagesEndRef = useRef(null);
+    const previousMessageLength = useRef(newMessage.length); // Track message length changes
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -66,6 +242,11 @@ export default function Chat() {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    useEffect(() => {
+        // Update the previous message length whenever newMessage changes
+        previousMessageLength.current = newMessage.length;
+    }, [newMessage]);
 
     useEffect(() => {
         // Only auto-cycle if user hasn't manually navigated recently
@@ -77,7 +258,18 @@ export default function Chat() {
         return () => clearInterval(interval);
     }, [showSuggestions]);
 
-    const sendMessage = (text = newMessage) => {
+    // Handle backspace detection and nervousness increase
+    const handleBackspaceDetection = (currentValue) => {
+        // Check if text was actually deleted (current length < previous length)
+        if (currentValue.length < previousMessageLength.current) {
+            setBackspaceCount(prev => prev + 1);
+            // Increase nervousness by 1-2% for each backspace deletion, capped at 85%
+            const increment = Math.random() < 0.7 ? 1 : 2; // 70% chance of 1%, 30% chance of 2%
+            setNervousnessLevel(prev => Math.min(85, prev + increment));
+        }
+    };
+
+    const sendMessage = async (text = newMessage) => {
         console.log('💬 Send message called with:', text);
         if (text.trim()) {
             console.log('💬 Sending message:', text.trim());
@@ -90,6 +282,8 @@ export default function Chat() {
             };
             setMessages([...messages, message]);
             setNewMessage('');
+            previousMessageLength.current = 0; // Reset length tracker
+            setBackspaceCount(0); // Reset backspace counter
             
             // Update nervousness and caring based on message content
             const hasQuestion = text.includes('?');
@@ -97,28 +291,64 @@ export default function Chat() {
             
             if (hasQuestion) setUserCareScore(prev => Math.min(100, prev + 2));
             if (hasCompliment) setUserCareScore(prev => Math.min(100, prev + 3));
-            setNervousnessLevel(prev => Math.max(0, prev - 5));
+            // Reduce nervousness when sending message, but not all the way to zero
+            setNervousnessLevel(prev => Math.max(10, prev - (5 + Math.floor(Math.random() * 10)))); // Reduce by 5-15 points
             
-            // Simulate partner typing
+            // Simulate partner typing with variable delay based on message complexity
             setIsTyping(true);
-            setTimeout(() => {
+            const typingDelay = Math.min(3000, Math.max(1000, text.length * 50)); // 1-3 seconds based on message length
+            setTimeout(async () => {
                 setIsTyping(false);
-                const responses = [
-                    "That sounds wonderful! 😊",
-                    "I feel the same way! 💕",
-                    "Let's make some beautiful memories together 🦋",
-                    "Your energy is so positive! ✨",
-                    "I love how thoughtful you are 💙"
-                ];
+                
+                // Generate contextual response using AI APIs
+                // Create a new function that considers nervousness context
+                const generatePartnerResponse = async (userMessage, conversationHistory, nervousnessLevel) => {
+                    // Add nervousness context to the user message
+                    const contextualMessage = nervousnessLevel > 50 
+                        ? `${userMessage} (User seems a bit nervous, be extra supportive)`
+                        : userMessage;
+                    
+                    // Try OpenAI first
+                    if (process.env.REACT_APP_OPENAI_API_KEY) {
+                        const openAIResponse = await generateOpenAIResponse(contextualMessage, conversationHistory);
+                        if (openAIResponse) return openAIResponse;
+                    }
+
+                    // Fallback to Gemini
+                    if (process.env.REACT_APP_GEMINI_API_KEY) {
+                        const geminiResponse = await generateGeminiResponse(contextualMessage, conversationHistory);
+                        if (geminiResponse) return geminiResponse;
+                    }
+
+                    // Fallback to more sophisticated default responses if no API is available or fails
+                    const defaultResponses = [
+                        "That sounds really interesting! Tell me more about that?",
+                        "I love how you see the world. What made you think of that?",
+                        "That's so beautiful. I can picture it clearly in my mind",
+                        "Wow, you have such a unique perspective. I'd love to hear more!",
+                        "Your thoughts always make me see things differently. What else is on your mind?",
+                        "I feel like I'm getting to know the real you. That means a lot to me",
+                        "You have such a way with words. Do you ever write poetry?",
+                        "I'm so glad we're having this conversation. It feels special"
+                    ];
+                    return defaultResponses[Math.floor(Math.random() * defaultResponses.length)];
+                };
+                
+                // Generate response considering nervousness level
+                const responseText = await generatePartnerResponse(text, messages, nervousnessLevel);
+                
+                // Update partner care score based on conversation quality
+                setPartnerCareScore(prev => Math.min(100, prev + (responseText ? 3 : 1)));
+                
                 const response = {
                     id: Date.now() + 1,
-                    text: responses[Math.floor(Math.random() * responses.length)],
+                    text: responseText,
                     sender: 'partner',
                     timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                     type: 'text'
                 };
                 setMessages(prev => [...prev, response]);
-            }, 2000);
+            }, typingDelay);
         } else {
             console.log('💬 Message is empty, not sending');
         }
@@ -173,7 +403,7 @@ export default function Chat() {
                         fontWeight: 'bold',
                         fontSize: '18px'
                     }}>
-                        S
+                        E
                     </div>
                     <div style={{ flex: 1 }}>
                         <h2 style={{
@@ -188,7 +418,7 @@ export default function Chat() {
                             fontSize: '14px',
                             margin: 0,
                             fontStyle: 'italic'
-                        }}>Emma seems to be choosing her words carefully...</p>
+                        }}>Artistic dreamer with a heart full of butterflies 🦋</p>
                     </div>
                     <div style={{
                         display: 'flex',
@@ -641,10 +871,11 @@ export default function Chat() {
                             value={newMessage}
                             onChange={(e) => {
                                 console.log('💬 Input changed:', e.target.value);
+                                handleBackspaceDetection(e.target.value); // Check for backspace before updating
                                 setNewMessage(e.target.value);
                             }}
-                            onKeyPress={(e) => {
-                                console.log('💬 Key pressed:', e.key);
+                            onKeyDown={(e) => {
+                                // Handle Enter key for sending message
                                 if (e.key === 'Enter') {
                                     console.log('💬 Enter pressed, sending message');
                                     sendMessage();

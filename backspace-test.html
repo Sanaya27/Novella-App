@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backspace Nervousness Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #6B46C1 0%, #9333EA 50%, #EC4899 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #f0abfc;
+        }
+        .subtitle {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #c4b5fd;
+            font-style: italic;
+        }
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 25px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #ec4899;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .nervousness-container {
+            margin: 20px 0;
+        }
+        .nervousness-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .nervousness-bar {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 25px;
+            overflow: hidden;
+            position: relative;
+        }
+        .nervousness-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #5cc2bc);
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        .info {
+            font-size: 14px;
+            color: #c4b5fd;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            font-style: italic;
+        }
+        .emoji {
+            font-size: 24px;
+            margin: 0 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Novella Backspace Test</h1>
+        <p class="subtitle">Type and delete text to see your nervousness level change</p>
+        
+        <input type="text" id="messageInput" placeholder="Type something and press backspace to delete...">
+        
+        <div class="nervousness-container">
+            <div class="nervousness-label">
+                <span>Nervousness Level</span>
+                <span id="nervousnessValue">20%</span>
+            </div>
+            
+            <div class="nervousness-bar">
+                <div class="nervousness-fill" id="nervousnessBar" style="width: 20%"></div>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div>
+                <div>Backspace Count: <span id="backspaceCount">0</span></div>
+                <div>Current Length: <span id="currentLength">0</span> characters</div>
+            </div>
+            <div>
+                <div>Status: <span id="status">Calm</span></div>
+                <div>Mood: <span id="mood">😌</span></div>
+            </div>
+        </div>
+        
+        <div class="info">
+            <p><strong>How it works:</strong> Each time you delete text with backspace, your nervousness level increases by 1-2%. 
+            The level is capped at 85% and will never reach 100%. When you send a message (press Enter), 
+            your nervousness decreases.</p>
+        </div>
+    </div>
+
+    <script>
+        // Initial state
+        let nervousnessLevel = 20;
+        let backspaceCount = 0;
+        let previousLength = 0;
+        
+        // DOM elements
+        const messageInput = document.getElementById('messageInput');
+        const nervousnessValue = document.getElementById('nervousnessValue');
+        const nervousnessBar = document.getElementById('nervousnessBar');
+        const backspaceCountElement = document.getElementById('backspaceCount');
+        const currentLengthElement = document.getElementById('currentLength');
+        const statusElement = document.getElementById('status');
+        const moodElement = document.getElementById('mood');
+        
+        // Update display elements
+        function updateDisplay() {
+            // Update nervousness display
+            nervousnessValue.textContent = `${nervousnessLevel}%`;
+            nervousnessBar.style.width = `${nervousnessLevel}%`;
+            
+            // Update stats
+            backspaceCountElement.textContent = backspaceCount;
+            currentLengthElement.textContent = messageInput.value.length;
+            
+            // Update status and mood based on nervousness level
+            if (nervousnessLevel < 30) {
+                statusElement.textContent = "Calm";
+                moodElement.textContent = "😌";
+            } else if (nervousnessLevel < 50) {
+                statusElement.textContent = "Slightly Nervous";
+                moodElement.textContent = "😅";
+            } else if (nervousnessLevel < 70) {
+                statusElement.textContent = "Nervous";
+                moodElement.textContent = "😰";
+            } else {
+                statusElement.textContent = "Very Nervous";
+                moodElement.textContent = "😱";
+            }
+        }
+        
+        // Handle backspace detection and nervousness increase
+        function handleBackspaceDetection(currentValue) {
+            // Check if text was actually deleted (current length < previous length)
+            if (currentValue.length < previousLength) {
+                backspaceCount++;
+                // Increase nervousness by 1-2% for each backspace deletion, capped at 85%
+                const increment = Math.random() < 0.7 ? 1 : 2; // 70% chance of 1%, 30% chance of 2%
+                nervousnessLevel = Math.min(85, nervousnessLevel + increment);
+                updateDisplay();
+            }
+            previousLength = currentValue.length;
+        }
+        
+        // Event listeners
+        messageInput.addEventListener('input', function(e) {
+            handleBackspaceDetection(e.target.value);
+        });
+        
+        messageInput.addEventListener('keydown', function(e) {
+            // Handle Enter key for sending message
+            if (e.key === 'Enter') {
+                // Reduce nervousness when sending message
+                nervousnessLevel = Math.max(10, nervousnessLevel - (5 + Math.floor(Math.random() * 10)));
+                updateDisplay();
+                
+                // Clear input
+                messageInput.value = '';
+                previousLength = 0;
+            }
+        });
+        
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>

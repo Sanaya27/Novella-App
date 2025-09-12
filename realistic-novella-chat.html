@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novella - Realistic Chat with Nervousness</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #6B46C1 0%, #9333EA 50%, #EC4899 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 500px;
+            height: 90vh;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .chat-header {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .user-info h2 {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+        .user-info p {
+            font-size: 14px;
+            color: #22d3ee;
+            font-style: italic;
+        }
+        .messages-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .received {
+            align-self: flex-start;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-bottom-left-radius: 4px;
+        }
+        .sent {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            border-bottom-right-radius: 4px;
+        }
+        .message-content {
+            font-size: 16px;
+            line-height: 1.4;
+            font-style: italic;
+        }
+        .message-time {
+            font-size: 12px;
+            margin-top: 6px;
+            opacity: 0.7;
+            text-align: right;
+        }
+        .typing-indicator {
+            align-self: flex-start;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            border-radius: 18px;
+            padding: 12px 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom-left-radius: 4px;
+        }
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #c4b5fd;
+            border-radius: 50%;
+            animation: bounce 1.5s infinite;
+        }
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+        .nervousness-container {
+            padding: 10px 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
+        }
+        .nervousness-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .nervousness-bar {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+        }
+        .nervousness-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4ecdc4, #5cc2bc);
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+        .input-container {
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            border-top: 1px solid rgba(139, 92, 246, 0.2);
+            display: flex;
+            gap: 10px;
+        }
+        .message-input {
+            flex: 1;
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+            outline: none;
+        }
+        .message-input:focus {
+            border-color: #ec4899;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .send-button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #22d3ee, #8b5cf6);
+            border: none;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        .send-button:hover {
+            transform: scale(1.05);
+        }
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .info-text {
+            font-size: 12px;
+            color: #c4b5fd;
+            text-align: center;
+            margin-top: 5px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="avatar">E</div>
+            <div class="user-info">
+                <h2>Emma Rodriguez</h2>
+                <p>Online now • Choosing words carefully...</p>
+            </div>
+        </div>
+        
+        <div class="messages-container" id="messagesContainer">
+            <div class="message received">
+                <div class="message-content">Hey! I had such a great time syncing hearts with you earlier 😊</div>
+                <div class="message-time">11:37 AM</div>
+            </div>
+            <div class="message sent">
+                <div class="message-content">Me too! It felt so magical.</div>
+                <div class="message-time">11:38 AM</div>
+            </div>
+            <div class="message received">
+                <div class="message-content">🦋</div>
+                <div class="message-time">11:39 AM</div>
+            </div>
+            <div class="message received">
+                <div class="message-content">Right? I've never experienced anything like it. My butterfly garden has a new species now!</div>
+                <div class="message-time">11:40 AM</div>
+            </div>
+        </div>
+        
+        <div class="nervousness-container">
+            <div class="nervousness-header">
+                <span>Nervousness Level</span>
+                <span id="nervousnessValue">20%</span>
+            </div>
+            <div class="nervousness-bar">
+                <div class="nervousness-fill" id="nervousnessBar" style="width: 20%"></div>
+            </div>
+            <div class="info-text">Taking your time... 😊</div>
+        </div>
+        
+        <div class="input-container">
+            <input type="text" class="message-input" id="messageInput" placeholder="Flutter a message...">
+            <button class="send-button" id="sendButton" disabled>➤</button>
+        </div>
+    </div>
+
+    <script>
+        // Initial state
+        let nervousnessLevel = 20;
+        let backspaceCount = 0;
+        let previousLength = 0;
+        let isTyping = false;
+        
+        // DOM elements
+        const messagesContainer = document.getElementById('messagesContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const nervousnessValue = document.getElementById('nervousnessValue');
+        const nervousnessBar = document.getElementById('nervousnessBar');
+        
+        // Realistic responses for the chat partner
+        const partnerResponses = [
+            "That sounds really interesting! Tell me more about it?",
+            "I love how thoughtful you are when you write. It shows you really care.",
+            "Your energy is so positive! It's contagious 😊",
+            "I've been thinking about what you said... you have such a unique perspective.",
+            "That made me smile! You have a way with words.",
+            "I feel like I can really connect with you on a deeper level.",
+            "Thanks for sharing that with me. It means a lot.",
+            "You're making this conversation so enjoyable!",
+            "I'm glad we connected. These moments feel special.",
+            "Your thoughts resonate with me. It's like we're on the same wavelength.",
+            "I appreciate how you take the time to express yourself thoughtfully.",
+            "That's such a beautiful way to look at things!",
+            "You have an amazing ability to make ordinary moments feel extraordinary.",
+            "I'm really enjoying our conversation. You're easy to talk to.",
+            "Your words have a way of painting vivid pictures in my mind."
+        ];
+        
+        // Update nervousness display
+        function updateNervousnessDisplay() {
+            nervousnessValue.textContent = `${nervousnessLevel}%`;
+            nervousnessBar.style.width = `${nervousnessLevel}%`;
+        }
+        
+        // Handle backspace detection and nervousness increase
+        function handleBackspaceDetection(currentValue) {
+            // Check if text was actually deleted (current length < previous length)
+            if (currentValue.length < previousLength) {
+                backspaceCount++;
+                // Increase nervousness by 1-2% for each backspace deletion, capped at 85%
+                const increment = Math.random() < 0.7 ? 1 : 2; // 70% chance of 1%, 30% chance of 2%
+                nervousnessLevel = Math.min(85, nervousnessLevel + increment);
+                updateNervousnessDisplay();
+            }
+            previousLength = currentValue.length;
+        }
+        
+        // Add a message to the chat
+        function addMessage(content, isSent) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            messageDiv.innerHTML = `
+                <div class="message-content">${content}</div>
+                <div class="message-time">${timeString}</div>
+            `;
+            
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // Show typing indicator
+        function showTypingIndicator() {
+            if (isTyping) return;
+            
+            isTyping = true;
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+                <span style="margin-left: 8px; font-style: italic;">Emma is typing...</span>
+            `;
+            
+            messagesContainer.appendChild(typingDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        // Hide typing indicator
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+            isTyping = false;
+        }
+        
+        // Get a random response from the partner
+        function getPartnerResponse() {
+            return partnerResponses[Math.floor(Math.random() * partnerResponses.length)];
+        }
+        
+        // Send a message
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (!message) return;
+            
+            // Add user's message
+            addMessage(message, true);
+            
+            // Clear input and reset tracking
+            messageInput.value = '';
+            previousLength = 0;
+            sendButton.disabled = true;
+            
+            // Reduce nervousness when sending message
+            nervousnessLevel = Math.max(10, nervousnessLevel - (5 + Math.floor(Math.random() * 10)));
+            updateNervousnessDisplay();
+            
+            // Show typing indicator
+            showTypingIndicator();
+            
+            // Simulate partner response after a delay
+            const responseDelay = 1000 + Math.random() * 2000; // 1-3 seconds
+            setTimeout(() => {
+                hideTypingIndicator();
+                const response = getPartnerResponse();
+                addMessage(response, false);
+            }, responseDelay);
+        }
+        
+        // Event listeners
+        messageInput.addEventListener('input', function(e) {
+            // Enable/disable send button
+            sendButton.disabled = !e.target.value.trim();
+            
+            // Handle backspace detection
+            handleBackspaceDetection(e.target.value);
+        });
+        
+        messageInput.addEventListener('keydown', function(e) {
+            // Handle Enter key for sending message
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (!sendButton.disabled) {
+                    sendMessage();
+                }
+            }
+        });
+        
+        sendButton.addEventListener('click', sendMessage);
+        
+        // Initialize display
+        updateNervousnessDisplay();
+    </script>
+</body>
+</html>

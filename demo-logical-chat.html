@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novella Logical Chat Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6B46C1 0%, #9333EA 50%, #EC4899 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .explanation {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        .chat-container {
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+        .user-message {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            margin-left: auto;
+            text-align: right;
+        }
+        .partner-message {
+            background: rgba(139, 92, 246, 0.3);
+            border: 1px solid rgba(139, 92, 246, 0.5);
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+        }
+        input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+        }
+        button {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: none;
+            background: linear-gradient(135deg, #22d3ee, #8b5cf6);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        .typing-indicator {
+            display: none;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            color: #22d3ee;
+            font-style: italic;
+        }
+        .timestamp {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+        .demo-note {
+            color: #fbbf24;
+            text-align: center;
+            margin-top: 15px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🦋 Novella Logical Chat Demo</h1>
+        
+        <div class="explanation">
+            <h3>How This Works</h3>
+            <p>This demo shows how the Novella chat system generates logical, context-aware responses:</p>
+            <ul>
+                <li>Responses are based on the conversation history</li>
+                <li>Each response logically follows from the previous messages</li>
+                <li>The system maintains context and builds on shared topics</li>
+                <li>Responses are natural and conversational (1-2 sentences)</li>
+            </ul>
+            <p><strong>Note:</strong> This is a demonstration of the logic. In the full app, these responses would come from AI APIs.</p>
+        </div>
+        
+        <div class="chat-container" id="chat-container">
+            <div class="message partner-message">
+                Hey! I had such a great time syncing hearts with you earlier 😊
+                <div class="timestamp">11:37 AM</div>
+            </div>
+            <div class="message user-message">
+                Me too! It felt so magical.
+                <div class="timestamp">11:38 AM</div>
+            </div>
+            <div class="message partner-message">
+                Right? I've never experienced anything like it. My butterfly garden has a new species now!
+                <div class="timestamp">11:39 AM</div>
+            </div>
+        </div>
+        
+        <div class="typing-indicator" id="typing-indicator">
+            🦋 Emma is typing...
+        </div>
+        
+        <div class="input-container">
+            <input type="text" id="message-input" placeholder="Type your message..." onkeydown="handleKeyDown(event)">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+        
+        <div class="demo-note">
+            This demo shows the logical flow without requiring API keys
+        </div>
+    </div>
+
+    <script>
+        // Sample conversation patterns to demonstrate logical responses
+        const responsePatterns = {
+            greeting: [
+                "Hey there! How are you doing today? 😊",
+                "Hi! It's great to see you again!",
+                "Hello! I was just thinking about our last conversation"
+            ],
+            question: [
+                "That's an interesting question! What made you think of that?",
+                "I've been wondering about that too. What's your take on it?",
+                "Great question! I think it really depends on the situation"
+            ],
+            compliment: [
+                "Thank you for saying that! It means a lot to me 😊",
+                "You're too kind! I appreciate the compliment",
+                "That's so sweet of you to say! You just made my day"
+            ],
+            hobby: [
+                "That sounds wonderful! How did you get into that?",
+                "I'd love to hear more about that. What do you enjoy most about it?",
+                "That's really cool! I've always been curious about that"
+            ],
+            feeling: [
+                "I understand how you feel. It's completely normal to feel that way",
+                "Thank you for sharing that with me. Your feelings are valid",
+                "I'm here for you. It helps to talk about these things"
+            ],
+            default: [
+                "That sounds really interesting! Tell me more about that?",
+                "I love how you see the world. What made you think of that?",
+                "That's so beautiful. I can picture it clearly in my mind",
+                "Wow, you have such a unique perspective. I'd love to hear more!",
+                "Your thoughts always make me see things differently. What else is on your mind?",
+                "I feel like I'm getting to know the real you. That means a lot to me",
+                "You have such a way with words. Do you ever write poetry?",
+                "I'm so glad we're having this conversation. It feels special"
+            ]
+        };
+        
+        let conversationHistory = [
+            "Hey! I had such a great time syncing hearts with you earlier 😊",
+            "Me too! It felt so magical.",
+            "Right? I've never experienced anything like it. My butterfly garden has a new species now!"
+        ];
+        
+        function detectMessageIntent(message) {
+            const lowerMessage = message.toLowerCase();
+            
+            if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
+                return 'greeting';
+            }
+            
+            if (lowerMessage.includes('?')) {
+                return 'question';
+            }
+            
+            if (lowerMessage.includes('beautiful') || lowerMessage.includes('amazing') || 
+                lowerMessage.includes('wonderful') || lowerMessage.includes('great')) {
+                return 'compliment';
+            }
+            
+            if (lowerMessage.includes('read') || lowerMessage.includes('book') || 
+                lowerMessage.includes('music') || lowerMessage.includes('art') || 
+                lowerMessage.includes('hiking') || lowerMessage.includes('garden')) {
+                return 'hobby';
+            }
+            
+            if (lowerMessage.includes('feel') || lowerMessage.includes('sad') || 
+                lowerMessage.includes('happy') || lowerMessage.includes('nervous') || 
+                lowerMessage.includes('excited') || lowerMessage.includes('anxious')) {
+                return 'feeling';
+            }
+            
+            return 'default';
+        }
+        
+        function generateLogicalResponse(userMessage) {
+            const intent = detectMessageIntent(userMessage);
+            const responses = responsePatterns[intent];
+            return responses[Math.floor(Math.random() * responses.length)];
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Add user message to chat
+            const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            addMessageToChat(message, 'user', timestamp);
+            
+            // Update conversation history
+            conversationHistory.push(message);
+            
+            // Clear input
+            input.value = '';
+            
+            // Show typing indicator
+            document.getElementById('typing-indicator').style.display = 'block';
+            
+            // Simulate typing delay
+            setTimeout(() => {
+                document.getElementById('typing-indicator').style.display = 'none';
+                
+                // Generate logical response
+                const response = generateLogicalResponse(message);
+                
+                // Add response to chat
+                const responseTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                addMessageToChat(response, 'partner', responseTimestamp);
+                
+                // Update conversation history
+                conversationHistory.push(response);
+                
+                // Scroll to bottom
+                const chatContainer = document.getElementById('chat-container');
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 1500); // 1.5 second delay
+        }
+        
+        function handleKeyDown(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        function addMessageToChat(content, sender, timestamp) {
+            const chatContainer = document.getElementById('chat-container');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+            messageDiv.innerHTML = `${content}<div class="timestamp">${timestamp}</div>`;
+            chatContainer.appendChild(messageDiv);
+            
+            // Scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>
