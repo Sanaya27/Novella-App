@@ -15,7 +15,7 @@ Where Hearts Sync and Stories Begin
 
 ## Table of Contents
 
-- [🌟 Overview](#overview)
+- [🌟 Overview](#-overview)
 - [🚀 Getting Started](#getting-started)
 - [📋 Prerequisites](#prerequisites)
 - [⚙️ Installation](#installation)
