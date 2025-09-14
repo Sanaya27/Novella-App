@@ -65,7 +65,7 @@ Transform your approach to digital dating with Novella's groundbreaking emotiona
 
 ### 🎯 Quick Demo
 ```bash
-# Experience Novella in 3 commands
+# Experience Novella in 4 commands
 git clone https://github.com/Sanaya27/Novella-App.git
 cd novella-app 
 npm install
