@@ -10,10 +10,10 @@ API keys are stored in the `.env` file in the `novella-app` directory:
 
 ```env
 # OpenAI API (ChatGPT)
-REACT_APP_OPENAI_API_KEY=sk-proj-aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890
+REACT_APP_OPENAI_API_KEY=your-key-here
 
 # Google Gemini API
-REACT_APP_GEMINI_API_KEY=AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ1234567
+REACT_APP_GEMINI_API_KEY=your-key-here
 ```
 
 ### 2. Security Notes
