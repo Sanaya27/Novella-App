@@ -372,7 +372,7 @@ It fades after one view. External capture is still possible; discourage misuse a
 - [Deployment Guide](docs/deployment.md) - Production setup instructions
 
 ### 🎯 Quick Links
-- [Live Demo](https://demo.novella.app) - Experience Novella instantly
+- [Live Demo]([https://demo.novella.app](https://novella-app-ayush.vercel.app/login)) - Experience Novella instantly
 - [Feature Requests](https://github.com/Sanaya27/Novella-App/issues) - Suggest improvements
 - [Bug Reports](https://github.com/Sanaya27/Novella-App/issues/new?template=bug_report.md) - Report issues
 
