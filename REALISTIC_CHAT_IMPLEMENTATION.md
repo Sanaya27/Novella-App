@@ -35,8 +35,8 @@ The chat system uses a fallback approach:
 ### Environment Variables
 API keys are stored in the `.env` file:
 ```env
-REACT_APP_OPENAI_API_KEY=sk-proj-aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890
-REACT_APP_GEMINI_API_KEY=AIzaSyABCDEFGHIJKLMNOPQRSTUVWXYZ1234567
+REACT_APP_OPENAI_API_KEY=your-key-here
+REACT_APP_GEMINI_API_KEY=your-key-here
 ```
 
 ### Key Functions
