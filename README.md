@@ -16,16 +16,16 @@ Where Hearts Sync and Stories Begin
 ## Table of Contents
 
 - [🌟 Overview](#-overview)
-- [🚀 Getting Started](#getting-started)
-- [📋 Prerequisites](#prerequisites)
-- [⚙️ Installation](#installation)
-- [💫 Usage](#usage)
-- [🧪 Testing](#testing)
-- [🏗️ Project Structure](#project-structure)
-- [🗺️ Roadmap](#roadmap)
-- [🤝 Contribution](#contribution)
-- [📄 License](#license)
-- [🙏 Acknowledgements](#acknowledgements)
+- [🚀 Getting Started](#-getting-started)
+- [📋 Prerequisites](#-prerequisites)
+- [⚙️ Installation](#-installation)
+- [💫 Usage](#-usage)
+- [🧪 Testing](#-testing)
+- [🏗️ Project Structure](#-project-structure)
+- [🗺️ Roadmap](#-roadmap)
+- [🤝 Contribution](#-contribution)
+- [📄 License](#-license)
+- [🙏 Acknowledgements](#-acknowledgements)
 
 ---
 
