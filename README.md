@@ -1,4 +1,4 @@
-markdown
+
 # Novella
 *Where Hearts Sync and Stories Begin*
 
@@ -45,20 +45,20 @@ The product vision includes:
 
 
 .
-├─ novella-app/                    # Web client (app UI)
-├─ novella-backend/                # Node.js backend prototype (REST / WebSockets)
-├─ Components/                     # Shared UI building blocks
-├─ Pages/                          # App / page-level views
-├─ Entities/                       # Domain models / helpers
-├─ Novella/                        # App-specific modules
-├─ butterflies/                    # Assets / animations for garden / flutters
-├─ *.html                          # Clickable logic demos (no build needed)
-├─ api-integration-demo.jsx        # API integration example
-├─ NOVELLA\_* & \_IMPLEMENTATION.md# Design & integration docs
-├─ RUN\_GUIDE.md                    # Local run notes
-├─ PRIVACY.md                      # Privacy / retention doc (draft)
-├─ LICENSE                         # MIT
-└─ package-lock.json               # Dependency lock (top-level)
+├─ novella-app/ # Web client (app UI)
+├─ novella-backend/ # Node.js backend prototype (REST / WebSockets)
+├─ Components/ # Shared UI building blocks
+├─ Pages/ # App / page-level views
+├─ Entities/ # Domain models / helpers
+├─ Novella/ # App-specific modules
+├─ butterflies/ # Assets / animations for garden / flutters
+├─ .html # Clickable logic demos (no build needed)
+├─ api-integration-demo.jsx # API integration example
+├─ NOVELLA_ & _IMPLEMENTATION.md# Design & integration docs
+├─ RUN_GUIDE.md # Local run notes
+├─ PRIVACY.md # Privacy / retention doc (draft)
+├─ LICENSE # MIT
+└─ package-lock.json # Dependency lock (top-level)
 
 `
 
