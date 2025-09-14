@@ -373,8 +373,8 @@ It fades after one view. External capture is still possible; discourage misuse a
 
 ### 🎯 Quick Links
 - [Live Demo](https://demo.novella.app) - Experience Novella instantly
-- [Feature Requests](https://github.com/Sanaya27/novella-app/novella/issues) - Suggest improvements
-- [Bug Reports](https://github.com/Sanaya27/novella-app/novella/issues/new?template=bug_report.md) - Report issues
+- [Feature Requests](https://github.com/Sanaya27/Novella-App/issues) - Suggest improvements
+- [Bug Reports](https://github.com/Sanaya27/Novella-App/issues/new?template=bug_report.md) - Report issues
 
 ### 🌐 Connect With Us
 - **Email**: sanayagirdhar@gmail.com
