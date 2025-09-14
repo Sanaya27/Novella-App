@@ -151,4 +151,4 @@ npm test         # Run tests
 3. **Customize**: Modify matching algorithms, butterfly generation
 4. **Deploy**: Consider hosting options for production
 
-Happy coding! Your Novella dating app is ready to create meaningful connections! 🦋💕
+Novella dating app is ready to create meaningful connections! 🦋💕
