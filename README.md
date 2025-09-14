@@ -65,10 +65,15 @@ Transform your approach to digital dating with Novella's groundbreaking emotiona
 
 ### 🎯 Quick Demo
 ```bash
-# Experience Novella in 4 commands
+# Experience Novella in just a few commands
 git clone https://github.com/Sanaya27/Novella-App.git
 cd novella-app 
 npm install
+
+#In case you don't have these modules installed
+npm install three @react-three/fiber @react-three/drei
+
+#Finally run the app
 npm start
 ```
 
@@ -372,7 +377,7 @@ It fades after one view. External capture is still possible; discourage misuse a
 - [Deployment Guide](docs/deployment.md) - Production setup instructions
 
 ### 🎯 Quick Links
-- [Live Demo]([https://demo.novella.app](https://novella-app-ayush.vercel.app/login)) - Experience Novella instantly
+- [Live Demo](https://novella-app-ayush.vercel.app/login) - Experience Novella instantly
 - [Feature Requests](https://github.com/Sanaya27/Novella-App/issues) - Suggest improvements
 - [Bug Reports](https://github.com/Sanaya27/Novella-App/issues/new?template=bug_report.md) - Report issues
 
