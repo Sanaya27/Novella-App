@@ -387,8 +387,6 @@ It fades after one view. External capture is still possible; discourage misuse a
 
 *"In a world of endless swipes, we choose to sync hearts."*
 
-![Novella Logo](https://raw.githubusercontent.com/novella-app/assets/main/logo-gradient.svg)
-
-[![Star on GitHub](https://img.shields.io/github/stars/Sanaya27/novella-app/novella?style=social)](https://github.com/Sanaya27/novella-app/novella)
+[![Star on GitHub](https://img.shields.io/github/stars/Sanaya27/novella-app/novella?style=social)](https://github.com/Sanaya27/Novella-App)
 
 </div>ories Begin
