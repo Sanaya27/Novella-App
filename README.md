@@ -327,11 +327,14 @@ We welcome contributors who share our vision of authentic digital connections!
 5. Code review and collaboration
 6. Merge and celebrate! 🎉
 
-###Contributors
-Jaisica 
-1.Implemented voice-based sentiment analysis using speech recognition to classify emotions such as happy, sad, excited, and neutral, with corresponding mood-based visualizations.
-2.Configured and integrated Tailwind CSS v3 with PostCSS and Autoprefixer to enhance UI consistency, responsiveness, and maintainability.
-3.Developed seasonal butterfly animations aligned with special events and project milestones to improve visual engagement.
+## Contributors
+
+### Jaisica Vijayran
+
+1. Implemented **voice-based sentiment analysis** using speech recognition to classify emotions such as *happy, sad, excited, and neutral*, with corresponding mood-based visualizations.
+2. Configured and integrated **Tailwind CSS v3** with PostCSS and Autoprefixer to enhance UI consistency, responsiveness, and maintainability.
+3. Developed **seasonal butterfly animations** aligned with special events and project milestones to improve visual engagement.
+
 
 ## 📄 License
 
