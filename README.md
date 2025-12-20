@@ -402,4 +402,4 @@ It fades after one view. External capture is still possible; discourage misuse a
 
 [![Star on GitHub](https://img.shields.io/github/stars/Sanaya27/novella-app/novella?style=social)](https://github.com/Sanaya27/Novella-App)
 
-</div>ories Begin
+</div>
